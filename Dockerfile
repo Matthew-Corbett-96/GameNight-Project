@@ -1,9 +1,8 @@
 FROM python:3.10.6-alpine3.16
 
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		postgresql-client \
-	&& rm -rf /var/lib/apt/lists/*
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 WORKDIR /usr/src/app
 
@@ -12,5 +11,5 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+EXPOSE 8080
+CMD ["python", "./django-project-container/manage.py", "runserver", "0.0.0.0:8080"]
