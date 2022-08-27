@@ -57,11 +57,11 @@ WSGI_APPLICATION = 'gamenightproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'DB-GameNight-Project',
-        'USER': 'matthew',
-        'PASSWORD': 'password',
-        'HOST': '127.0.0.2',
-        'PORT': '5000',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgrespw',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
@@ -83,7 +83,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'ETC'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

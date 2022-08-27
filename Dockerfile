@@ -1,12 +1,9 @@
-FROM python:3.10.6-alpine3.16
-
-# set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+FROM python:3
 
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY . .
