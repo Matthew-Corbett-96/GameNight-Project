@@ -1,29 +1,49 @@
+version: '3.9'
+
 volumes:
   data: {}
 
+networks:
+  main:
+    name: main_network
+    driver: bridge
+
 services:
   myapp:
-    image: gamenightproject:a0.1
+    container_name: application
+    build:
+      context: .
+    command: >
+      sh -c "python manage.py wait_for_db &&
+            python manage.py migrate &&
+            python manage.py runserver 0.0.0.0:8080"
+    volumes:
+      - './app:/app'
     environment:
+      - SECRET_KEY=devkeysecret
+      - DEBUG=1
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
-    ports: 
-      - 8080:8080
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=matthewjcorbett96@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-      - PGADMIN_LISTEN_ADDRESS=pgadmin
-      - PGADMIN_LISTEN_PORT=5050
+      - DB_HOST=db
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgrespw
+    networks:
+      - main
     ports:
-      - 5050:8081
+      - 8080:8080
+    depends_on:
+      - db
+
   db:
+    container_name: postgres_database
     image: postgres:latest
     environment:
-      - POSTGRES_PASSWORD=postgrespw
       - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgrespw
+    networks:
+      - main
     ports:
-      - 6060:8082
+      - 6060:5432
     volumes:
-      - data:/var/lib/postgresql
+      - ./data:/var/lib/postgresql
