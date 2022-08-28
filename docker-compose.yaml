@@ -1,0 +1,50 @@
+version: '3.9'
+
+volumes:
+  data: {}
+
+networks:
+  main:
+    name: main_network
+    driver: bridge
+
+services:
+  myapp:
+    container_name: application
+    volumes:
+      - './app:/app'
+    build:
+      context: .
+    command: >
+      sh -c "python manage.py wait_for_db &&
+            python manage.py migrate &&
+            python manage.py runserver 0.0.0.0:8080"
+    environment:
+      - SECRET_KEY=devkeysecret
+      - DEBUG=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - DB_HOST=db
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgrespw
+    networks:
+      - main
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+  db:
+    container_name: postgres_database
+    image: postgres:14-alpine3.16
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgrespw
+    networks:
+      - main
+    ports:
+      - 6060:5432
+    volumes:
+      - ./data:/var/lib/postgresql

@@ -1,0 +1,27 @@
+{% load static %}
+
+<nav class="navbar">
+ <img src="{% static 'main/squid.png' %}" width="150rem">
+
+  <button class="navbar-toggler" type="button">
+    Navigation
+  </button>
+
+  <div>
+    <ul>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'index' %}">Home</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'index' %}">Gamers</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'index' %}">Games</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'index' %}">About</a>
+    </li>
+    </ul>
+  </div>
+
+</nav>
