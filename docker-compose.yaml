@@ -11,14 +11,14 @@ networks:
 services:
   myapp:
     container_name: application
+    volumes:
+      - './app:/app'
     build:
       context: .
     command: >
       sh -c "python manage.py wait_for_db &&
             python manage.py migrate &&
             python manage.py runserver 0.0.0.0:8080"
-    volumes:
-      - './app:/app'
     environment:
       - SECRET_KEY=devkeysecret
       - DEBUG=1
@@ -37,8 +37,9 @@ services:
 
   db:
     container_name: postgres_database
-    image: postgres:latest
+    image: postgres:14-alpine3.16
     environment:
+      - POSTGRES_DB=postgres
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=postgrespw
     networks:
