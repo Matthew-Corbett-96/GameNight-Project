@@ -13,6 +13,7 @@ services:
     container_name: application
     volumes:
       - './app:/app'
+      - './data/web:/vol/web'
     build:
       context: .
     command: >
