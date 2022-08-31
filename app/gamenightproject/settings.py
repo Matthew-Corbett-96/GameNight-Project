@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main.apps.MainConfig'
+    'core.apps.CoreConfig'
 ]
 
 MIDDLEWARE = [
@@ -100,7 +100,7 @@ USE_TZ = True
 STATIC_URL = '/static/static/'
 MEDIA_URL = '/static/media/'
 
-MEDIA_ROOT = '/vols/web/media/'
+MEDIA_ROOT = 'vols/web/media/'
 STATIC_ROOT = '/vols/web/static/'
 
 # Default primary key field type

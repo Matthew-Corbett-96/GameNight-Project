@@ -7,9 +7,9 @@ from django.conf import settings
 # Urls
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('main/', include('main.urls'))
+    path('core/', include('core.urls'))
 ]
-
+# only runs in debug mode 
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL,

@@ -1,8 +1,5 @@
 version: '3.9'
 
-volumes:
-  data: {}
-
 networks:
   main:
     name: main_network
@@ -11,15 +8,20 @@ networks:
 services:
   myapp:
     container_name: application
-    volumes:
-      - './app:/app'
-      - './data/web:/vol/web'
+    networks:
+      - main
+    ports:
+      - 8080:8080
     build:
       context: .
     command: >
       sh -c "python manage.py wait_for_db &&
+            python manage.py makemigrations &&
             python manage.py migrate &&
             python manage.py runserver 0.0.0.0:8080"
+    volumes:
+      - './app:/app'
+      - './data/web:/vol/web'
     environment:
       - SECRET_KEY=devkeysecret
       - DEBUG=1
@@ -29,10 +31,6 @@ services:
       - DB_NAME=postgres
       - DB_USER=postgres
       - DB_PASSWORD=postgrespw
-    networks:
-      - main
-    ports:
-      - 8080:8080
     depends_on:
       - db
 
@@ -48,4 +46,4 @@ services:
     ports:
       - 6060:5432
     volumes:
-      - ./data:/var/lib/postgresql
+      - ./data/data:/var/lib/postgresql
