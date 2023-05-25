@@ -1,7 +1,7 @@
 version: '3.9'
 
 volumes:
-  data: {}
+  postgres_data:
 
 networks:
   main:
@@ -9,36 +9,45 @@ networks:
     driver: bridge
 
 services:
-  myapp:
-    container_name: application
-    volumes:
-      - './app:/app'
-      - './data/web:/vol/web'
+  frontend:
+    container_name: frontend
     build:
-      context: .
-    command: >
-      sh -c "python manage.py wait_for_db &&
-            python manage.py migrate &&
-            python manage.py runserver 0.0.0.0:8080"
-    environment:
-      - SECRET_KEY=devkeysecret
-      - DEBUG=1
-      - PYTHONDONTWRITEBYTECODE=1
-      - PYTHONUNBUFFERED=1
-      - DB_HOST=db
-      - DB_NAME=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=postgrespw
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     networks:
       - main
     ports:
-      - 8080:8080
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - db
+  
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - FLASK_RUN_HOST=0.0.0.0
+      - DATABASE_URL=postgresql://postgres:postgrespw@db:5432/postgres
+    networks:
+      - main
     depends_on:
       - db
 
   db:
-    container_name: postgres_database
-    image: postgres:14-alpine3.16
+    container_name: database
+    image: postgres:latest
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USERNAME=postgres
@@ -46,6 +55,24 @@ services:
     networks:
       - main
     ports:
-      - 6060:5432
+      - 5432:5432
     volumes:
-      - ./data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: matthewjcorbett96@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: SuperSecret
+    networks:
+      - main
+    ports:
+      - 5050:80
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin  # Persist PgAdmin data
+    user: "5050:5050"
+    depends_on:
+      - db
+  

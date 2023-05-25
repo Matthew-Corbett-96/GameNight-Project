@@ -1,14 +1,12 @@
 <script setup lang="ts">
-
 </script>
 
-
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div class="home">
+    <h1>Reg</h1>
+
   </div>
 </template>
 
 <style scoped>
-
 </style>

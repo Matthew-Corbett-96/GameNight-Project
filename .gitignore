@@ -130,3 +130,7 @@ dmypy.json
 
 #application stuff 
 data
+frontend2
+quiz
+routerLearning
+pgadmin_data
