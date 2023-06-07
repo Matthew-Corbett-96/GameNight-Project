@@ -1,0 +1,6 @@
+Flask
+flask_sqlalchemy
+psycopg2-binary
+Flask-Migrate
+# flask rest api 
+Flask-RESTful
