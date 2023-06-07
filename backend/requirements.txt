@@ -1,4 +1,6 @@
-Flask==2.3
-flask_sqlalchemy==2.5.1
-# psycopg2-binary==2.9.2
-Flask-Migrate==3.1.0
+Flask
+flask_sqlalchemy
+psycopg2-binary
+Flask-Migrate
+# flask rest api 
+Flask-RESTful
