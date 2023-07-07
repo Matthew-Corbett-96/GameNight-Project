@@ -7,6 +7,7 @@ from datetime import datetime
 
 
 def setup_routes(app: Flask, api: Api) -> None:
+    # Game model
     class GameRestClass(Resource):
         def get(self, game_id: str = None) -> Response:
             if game_id is None:
@@ -60,8 +61,6 @@ def setup_routes(app: Flask, api: Api) -> None:
                return make_response(f"{game} was removed.", 200)
             
             return make_response(jsonify({"message": "Game not found."}), 404)
-
-    api.add_resource(GameRestClass, "/games/", "/games/<string:game_id>")
 
     # User model
     class UserRestClass(Resource):
@@ -120,8 +119,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             
             return make_response(jsonify({"message": "User not found."}), 404)
 
-    api.add_resource(UserRestClass, "/users/", "/users/<string:user_id>")
-
     # GameNight model
     class GameNightRestClass(Resource):
         def get(self, game_night_id=None) -> Response:
@@ -167,8 +164,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             
             return make_response(jsonify({"message": "Game night not found."}), 404)
         
-    api.add_resource(GameNightRestClass, "/game_nights/", "/game_nights/<string:game_night_id>")
-
     # GameNightGame model
     class GameNightGameRestClass(Resource):
         pass
@@ -203,8 +198,8 @@ def setup_routes(app: Flask, api: Api) -> None:
             # When no attendance_id, user_id, or game_night_id is provided, return all attendances
             if user_id is None and game_night_id is None:
                 attendances = Attendance.query.all()
-                attendances_dict = [attendance.to_dict() for attendance in attendances]
-                return make_response(jsonify(attendances_dict), 200)
+                attendances_list: list = [attendance.to_dict() for attendance in attendances]
+                return make_response(jsonify(attendances_list), 200)
 
             if user_id is None:
                 user_id = ""
@@ -213,18 +208,19 @@ def setup_routes(app: Flask, api: Api) -> None:
 
             user_id: UUID = UUID(user_id)
             game_night_id: UUID = UUID(game_night_id)
-            attendance: Attendance = Attendance.query.filter_by(user_id=user_id, game_night_id=game_night_id)
-            if attendance:
-                return make_response(jsonify(attendance.to_dict()), 200)
+            attendances = Attendance.query.filter_by(user_id=user_id, game_night_id=game_night_id)
+            if attendances:
+                attendances_list: list = [attendance.to_dict() for attendance in attendances]
+                return make_response(jsonify(attendances_list), 200)
              
             return make_response(jsonify({"message": "Attendance not found."}), 404)
 
-        
         def post(self) -> Response:
             data = request.json
             attendance: Attendance = Attendance(
                 user_id=data["user_id"],
-                game_night_id=data["game_night_id"]
+                game_night_id=data["game_night_id"],
+                status=data["status"]
             )
             db.session.add(attendance)
             db.session.commit()
@@ -237,6 +233,7 @@ def setup_routes(app: Flask, api: Api) -> None:
             if attendance:
                 attendance.user_id = data["user_id"]
                 attendance.game_night_id = data["game_night_id"]
+                attendance.status = data["status"]
                 db.session.commit()
                 return make_response(jsonify(attendance.to_dict()), 200)
             
@@ -252,82 +249,101 @@ def setup_routes(app: Flask, api: Api) -> None:
             
             return make_response(jsonify({"message": "Attendance not found."}), 404)
         
-    api.add_resource(AttendanceRestClass, "/attendances/", "/attendances/<string:attendance_id>", "/attendances/?user_id=<string:user_id>", "/attendances/?game_night_id=<string:game_night_id>")
 
     # Announcment model
-    class AnnouncementRestClass(Resource):
-        def get(self, announcement_id=None) -> Response:
+    # class AnnouncementRestClass(Resource):
+    #     def get(self, announcement_id=None) -> Response:
 
-            args = request.args
-            active: bool = args.get("active")
+    #         args = request.args
+    #         active: bool = args.get("active")
 
-            # When no announcement_id or active is provided, return all announcements
-            if announcement_id is None and active is None:
-                announcements = Announcement.query.all()
-                announcements_dict = [announcement.to_dict() for announcement in announcements]
-                return make_response(jsonify(announcements_dict), 200)
+    #         # When no announcement_id or active is provided, return all announcements
+    #         if announcement_id is None and active is None:
+    #             announcements = Announcement.query.all()
+    #             announcements_dict = [announcement.to_dict() for announcement in announcements]
+    #             return make_response(jsonify(announcements_dict), 200)
             
-            # When an announcement_id is provided, return the announcement with that id
-            if announcement_id is not None:
-                announcement_id: UUID = UUID(announcement_id)
-                announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-                if announcement:
-                    return make_response(jsonify(announcement.to_dict()), 200)
+    #         # When an announcement_id is provided, return the announcement with that id
+    #         if announcement_id is not None:
+    #             announcement_id: UUID = UUID(announcement_id)
+    #             announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+    #             if announcement:
+    #                 return make_response(jsonify(announcement.to_dict()), 200)
                 
-                return make_response(jsonify({"message": "Announcement not found."}), 404)
+    #             return make_response(jsonify({"message": "Announcement not found."}), 404)
             
-            # When active is provided, return all announcements that are active
-            if active is not None:
-                currentDate = datetime.now()
-                if active == "true":
-                    announcements = Announcement.query.filter_by(start_date < currentDate).all()
-                announcements_dict = [announcement.to_dict() for announcement in announcements]
-                return make_response(jsonify(announcements_dict), 200)
+    #         # When active is provided, return all announcements that are active
+    #         if active is not None:
+    #             currentDate = datetime.now()
+    #             if active == "true":
+    #                 announcements = Announcement.query.filter_by(start_date < currentDate).all()
+    #             announcements_dict = [announcement.to_dict() for announcement in announcements]
+    #             return make_response(jsonify(announcements_dict), 200)
             
-            announcement_id: UUID = UUID(announcement_id)
-            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-            if announcement:
-                return make_response(jsonify(announcement.to_dict()), 200)
+    #         announcement_id: UUID = UUID(announcement_id)
+    #         announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+    #         if announcement:
+    #             return make_response(jsonify(announcement.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Announcement not found."}), 404)
+    #         return make_response(jsonify({"message": "Announcement not found."}), 404)
         
-        def post(self) -> Response:
-            data = request.json
-            announcement: Announcement = Announcement(
-                user_id=data["user_id"],
-                start_date=data["start_date"],
-                end_date=data["end_date"],
-                content=data["content"]
-            )
-            db.session.add(announcement)
-            db.session.commit()
-            return make_response(jsonify(announcement.to_dict()), 200)
+    #     def post(self) -> Response:
+    #         data = request.json
+    #         announcement: Announcement = Announcement(
+    #             user_id=data["user_id"],
+    #             start_date=data["start_date"],
+    #             end_date=data["end_date"],
+    #             content=data["content"]
+    #         )
+    #         db.session.add(announcement)
+    #         db.session.commit()
+    #         return make_response(jsonify(announcement.to_dict()), 200)
         
-        def put(self, announcement_id) -> Response:
-            announcement_id: UUID = UUID(announcement_id)
-            data = request.json
-            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-            if announcement:
-                announcement.user_id = data["user_id"]
-                announcement.start_date = data["start_date"]
-                announcement.end_date = data["end_date"]
-                announcement.content = data["content"]
-                db.session.commit()
-                return make_response(jsonify(announcement.to_dict()), 200)
+    #     def put(self, announcement_id) -> Response:
+    #         announcement_id: UUID = UUID(announcement_id)
+    #         data = request.json
+    #         announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+    #         if announcement:
+    #             announcement.user_id = data["user_id"]
+    #             announcement.start_date = data["start_date"]
+    #             announcement.end_date = data["end_date"]
+    #             announcement.content = data["content"]
+    #             db.session.commit()
+    #             return make_response(jsonify(announcement.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Announcement not found."}), 404)
+    #         return make_response(jsonify({"message": "Announcement not found."}), 404)
         
-        def delete(self, announcement_id) -> Response:
-            announcement_id: UUID = UUID(announcement_id)
-            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-            if announcement:
-                db.session.delete(announcement)
-                db.session.commit()
-                return make_response(f"{announcement} was removed.", 200)
+    #     def delete(self, announcement_id) -> Response:
+    #         announcement_id: UUID = UUID(announcement_id)
+    #         announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+    #         if announcement:
+    #             db.session.delete(announcement)
+    #             db.session.commit()
+    #             return make_response(f"{announcement} was removed.", 200)
             
-            return make_response(jsonify({"message": "Announcement not found."}), 404)
+    #         return make_response(jsonify({"message": "Announcement not found."}), 404)
         
-    api.add_resource(AnnouncementRestClass, "/announcements/", "/announcements/<string:announcement_id>", "/announcements/?active=<bool:active>")
+    # Add resources to api
+    api.add_resource(GameRestClass, 
+                     "/games/", 
+                     "/games/<string:game_id>"
+                     )
+    api.add_resource(UserRestClass, 
+                     "/users/", 
+                     "/users/<string:user_id>"
+                     )
+    api.add_resource(GameNightRestClass, 
+                     "/game_nights/", 
+                     "/game_nights/<string:game_night_id>"
+                     )
+    api.add_resource(AttendanceRestClass, 
+                     "/attendances/", 
+                     "/attendances/<string:attendance_id>", 
+                     "/attendances/?user_id=<string:user_id>", 
+                     "/attendances/?game_night_id=<string:game_night_id>"
+                     )
+    # api.add_resource(AnnouncementRestClass, "/announcements/", "/announcements/<string:announcement_id>", "/announcements/?active=<bool:active>")
+
     # Healthcheck
     @app.route("/healthcheck", methods=["GET"])
     def heathcheck() -> Response:
