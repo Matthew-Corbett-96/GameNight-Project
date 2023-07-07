@@ -251,77 +251,77 @@ def setup_routes(app: Flask, api: Api) -> None:
         
 
     # Announcment model
-    # class AnnouncementRestClass(Resource):
-    #     def get(self, announcement_id=None) -> Response:
+    class AnnouncementRestClass(Resource):
+        def get(self, announcement_id=None) -> Response:
 
-    #         args = request.args
-    #         active: bool = args.get("active")
+            args = request.args
+            active: bool = args.get("active")
 
-    #         # When no announcement_id or active is provided, return all announcements
-    #         if announcement_id is None and active is None:
-    #             announcements = Announcement.query.all()
-    #             announcements_dict = [announcement.to_dict() for announcement in announcements]
-    #             return make_response(jsonify(announcements_dict), 200)
+            # When no announcement_id or active is provided, return all announcements
+            if announcement_id is None and active is None:
+                announcements = Announcement.query.all()
+                announcements_list = [announcement.to_dict() for announcement in announcements]
+                return make_response(jsonify(announcements_list), 200)
             
-    #         # When an announcement_id is provided, return the announcement with that id
-    #         if announcement_id is not None:
-    #             announcement_id: UUID = UUID(announcement_id)
-    #             announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-    #             if announcement:
-    #                 return make_response(jsonify(announcement.to_dict()), 200)
+            # When an announcement_id is provided, return the announcement with that id
+            if announcement_id is not None:
+                announcement_id: UUID = UUID(announcement_id)
+                announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+                if announcement:
+                    return make_response(jsonify(announcement.to_dict()), 200)
                 
-    #             return make_response(jsonify({"message": "Announcement not found."}), 404)
+                return make_response(jsonify({"message": "Announcement not found."}), 404)
             
-    #         # When active is provided, return all announcements that are active
-    #         if active is not None:
-    #             currentDate = datetime.now()
-    #             if active == "true":
-    #                 announcements = Announcement.query.filter_by(start_date < currentDate).all()
-    #             announcements_dict = [announcement.to_dict() for announcement in announcements]
-    #             return make_response(jsonify(announcements_dict), 200)
+            # When active is provided, return all announcements that are active
+            if active is not None:
+                currentDate = datetime.now()
+                if active == "true":
+                    announcements = Announcement.query.filter_by(start_date < currentDate).all()
+                announcements_dict = [announcement.to_dict() for announcement in announcements]
+                return make_response(jsonify(announcements_dict), 200)
             
-    #         announcement_id: UUID = UUID(announcement_id)
-    #         announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-    #         if announcement:
-    #             return make_response(jsonify(announcement.to_dict()), 200)
+            announcement_id: UUID = UUID(announcement_id)
+            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+            if announcement:
+                return make_response(jsonify(announcement.to_dict()), 200)
             
-    #         return make_response(jsonify({"message": "Announcement not found."}), 404)
+            return make_response(jsonify({"message": "Announcement not found."}), 404)
         
-    #     def post(self) -> Response:
-    #         data = request.json
-    #         announcement: Announcement = Announcement(
-    #             user_id=data["user_id"],
-    #             start_date=data["start_date"],
-    #             end_date=data["end_date"],
-    #             content=data["content"]
-    #         )
-    #         db.session.add(announcement)
-    #         db.session.commit()
-    #         return make_response(jsonify(announcement.to_dict()), 200)
+        def post(self) -> Response:
+            data = request.json
+            announcement: Announcement = Announcement(
+                user_id=data["user_id"],
+                start_date=data["start_date"],
+                end_date=data["end_date"],
+                content=data["content"]
+            )
+            db.session.add(announcement)
+            db.session.commit()
+            return make_response(jsonify(announcement.to_dict()), 200)
         
-    #     def put(self, announcement_id) -> Response:
-    #         announcement_id: UUID = UUID(announcement_id)
-    #         data = request.json
-    #         announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-    #         if announcement:
-    #             announcement.user_id = data["user_id"]
-    #             announcement.start_date = data["start_date"]
-    #             announcement.end_date = data["end_date"]
-    #             announcement.content = data["content"]
-    #             db.session.commit()
-    #             return make_response(jsonify(announcement.to_dict()), 200)
+        def put(self, announcement_id) -> Response:
+            announcement_id: UUID = UUID(announcement_id)
+            data = request.json
+            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+            if announcement:
+                announcement.user_id = data["user_id"]
+                announcement.start_date = data["start_date"]
+                announcement.end_date = data["end_date"]
+                announcement.content = data["content"]
+                db.session.commit()
+                return make_response(jsonify(announcement.to_dict()), 200)
             
-    #         return make_response(jsonify({"message": "Announcement not found."}), 404)
+            return make_response(jsonify({"message": "Announcement not found."}), 404)
         
-    #     def delete(self, announcement_id) -> Response:
-    #         announcement_id: UUID = UUID(announcement_id)
-    #         announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-    #         if announcement:
-    #             db.session.delete(announcement)
-    #             db.session.commit()
-    #             return make_response(f"{announcement} was removed.", 200)
+        def delete(self, announcement_id) -> Response:
+            announcement_id: UUID = UUID(announcement_id)
+            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
+            if announcement:
+                db.session.delete(announcement)
+                db.session.commit()
+                return make_response(f"{announcement} was removed.", 200)
             
-    #         return make_response(jsonify({"message": "Announcement not found."}), 404)
+            return make_response(jsonify({"message": "Announcement not found."}), 404)
         
     # Add resources to api
     api.add_resource(GameRestClass, 
