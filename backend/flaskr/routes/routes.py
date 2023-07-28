@@ -3,8 +3,6 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from ..models.models import db, User, Game, GameNight, GameNightGame, Attendance, Announcement
 from uuid import UUID # used for generating unique ids
-from datetime import datetime
-
 
 def setup_routes(app: Flask, api: Api) -> None:
     # Game model
@@ -166,19 +164,54 @@ def setup_routes(app: Flask, api: Api) -> None:
         
     # GameNightGame model
     class GameNightGameRestClass(Resource):
-        pass
+        
+        def get(self, game_night_game_id=None) -> Response:
+            if game_night_game_id is None:
+                game_night_games = GameNightGame.query.all()
+                game_night_games_dict = [game_night_game.to_dict() for game_night_game in game_night_games]
+                return make_response(jsonify(game_night_games_dict), 200)
+
+            game_night_game_id: UUID = UUID(game_night_game_id)
+            game_night_game: GameNightGame = GameNightGame.query.filter_by(id=game_night_game_id).first()
+            if game_night_game:
+                return make_response(jsonify(game_night_game.to_dict()), 200)
+            
+            return make_response(jsonify({"message": "Game night game not found."}), 404)
+        
+        def post(self) -> Response:
+            data = request.json
+            game_night_game: GameNightGame = GameNightGame(
+                game_night_id=data["game_night_id"],
+                game_id=data["game_id"]
+            )
+            db.session.add(game_night_game)
+            db.session.commit()
+            return make_response(jsonify(game_night_game.to_dict()), 200)
+        
+        def put(self, game_night_game_id) -> Response:
+            game_night_game_id: UUID = UUID(game_night_game_id)
+            data = request.json
+            game_night_game: GameNightGame = GameNightGame.query.filter_by(id=game_night_game_id).first()
+            if game_night_game:
+                game_night_game.game_night_id = data["game_night_id"]
+                game_night_game.game_id = data["game_id"]
+                db.session.commit()
+                return make_response(jsonify(game_night_game.to_dict()), 200)
+            
+            return make_response(jsonify({"message": "Game night game not found."}), 404)
+        
+        def delete(self, game_night_game_id) -> Response:
+            game_night_game_id: UUID = UUID(game_night_game_id)
+            game_night_game: GameNightGame = GameNightGame.query.filter_by(id=game_night_game_id).first()
+            if game_night_game:
+                db.session.delete(game_night_game)
+                db.session.commit()
+                return make_response(f"{game_night_game} was removed.", 200)
+            
+            return make_response(jsonify({"message": "Game night game not found."}), 404)
+
 
     # Attendance model
-        '''
-            API Design:
-            GET /attendances/ - returns all attendances
-            GET /attendances/<attendance_id> - returns a specific attendance instance
-            GET /attendances/?user_id=<user_id> - returns all attendances for a specific user
-            GET /attendances/?game_night_id=<game_night_id> - returns all attendances for a specific game night
-            POST /attendances/ - creates a new attendance instance
-            PUT /attendances/<attendance_id> - updates a specific attendance instance
-            DELETE /attendances/<attendance_id> - deletes a specific attendance instance
-        '''
     class AttendanceRestClass(Resource):
         def get(self, attendance_id=None) -> Response:
 
@@ -194,26 +227,18 @@ def setup_routes(app: Flask, api: Api) -> None:
                     return make_response(jsonify(attendance.to_dict()), 200)
                 
                 return make_response(jsonify({"message": "Attendance not found."}), 404)
-
-            # When no attendance_id, user_id, or game_night_id is provided, return all attendances
-            if user_id is None and game_night_id is None:
-                attendances = Attendance.query.all()
-                attendances_list: list = [attendance.to_dict() for attendance in attendances]
-                return make_response(jsonify(attendances_list), 200)
-
-            if user_id is None:
-                user_id = ""
-            if game_night_id is None:
-                 game_night_id = ""
-
-            user_id: UUID = UUID(user_id)
-            game_night_id: UUID = UUID(game_night_id)
-            attendances = Attendance.query.filter_by(user_id=user_id, game_night_id=game_night_id)
-            if attendances:
-                attendances_list: list = [attendance.to_dict() for attendance in attendances]
-                return make_response(jsonify(attendances_list), 200)
-             
-            return make_response(jsonify({"message": "Attendance not found."}), 404)
+            
+            # Filter attendances by user_id or game_night_id
+            query = Attendance.query
+            if user_id is not None:
+                user_id: UUID = UUID(user_id)
+                query = query.filter_by(user_id=user_id)
+            if game_night_id is not None:
+                game_night_id: UUID = UUID(game_night_id)
+                query = query.filter_by(game_night_id=game_night_id)
+            attendances = query.all()
+            attendances_list: list = [attendance.to_dict() for attendance in attendances]
+            return make_response(jsonify(attendances_list), 200)
 
         def post(self) -> Response:
             data = request.json
@@ -257,12 +282,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             args = request.args
             active: bool = args.get("active")
 
-            # When no announcement_id or active is provided, return all announcements
-            if announcement_id is None and active is None:
-                announcements = Announcement.query.all()
-                announcements_list = [announcement.to_dict() for announcement in announcements]
-                return make_response(jsonify(announcements_list), 200)
-            
             # When an announcement_id is provided, return the announcement with that id
             if announcement_id is not None:
                 announcement_id: UUID = UUID(announcement_id)
@@ -271,21 +290,20 @@ def setup_routes(app: Flask, api: Api) -> None:
                     return make_response(jsonify(announcement.to_dict()), 200)
                 
                 return make_response(jsonify({"message": "Announcement not found."}), 404)
-            
-            # When active is provided, return all announcements that are active
+
+            # Filter announcements by active if provided
+            query = Announcement.query
             if active is not None:
-                currentDate = datetime.now()
-                if active == "true":
-                    announcements = Announcement.query.filter_by(start_date < currentDate).all()
-                announcements_dict = [announcement.to_dict() for announcement in announcements]
-                return make_response(jsonify(announcements_dict), 200)
-            
-            announcement_id: UUID = UUID(announcement_id)
-            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-            if announcement:
-                return make_response(jsonify(announcement.to_dict()), 200)
-            
-            return make_response(jsonify({"message": "Announcement not found."}), 404)
+                if active.lower() == "true":
+                    active = True
+                elif active.lower() == "false":
+                    active = False
+                else:
+                    return make_response(jsonify({"message": "Invalid active value."}), 400)
+                query = query.filter(Announcement.is_active == active)
+            announcements = query.all()
+            announcements_list = [announcement.to_dict() for announcement in announcements]
+            return make_response(jsonify(announcements_list), 200)
         
         def post(self) -> Response:
             data = request.json
@@ -342,9 +360,36 @@ def setup_routes(app: Flask, api: Api) -> None:
                      "/attendances/?user_id=<string:user_id>", 
                      "/attendances/?game_night_id=<string:game_night_id>"
                      )
-    # api.add_resource(AnnouncementRestClass, "/announcements/", "/announcements/<string:announcement_id>", "/announcements/?active=<bool:active>")
+    api.add_resource(AnnouncementRestClass, 
+                     "/announcements/", 
+                     "/announcements/<string:announcement_id>", 
+                     "/announcements/?active=<string:active>"
+                     )
+    api.add_resource(GameNightGameRestClass,
+                    "/game_night_games/",
+                    "/game_night_games/<string:game_night_game_id>"
+                    )
 
     # Healthcheck
     @app.route("/healthcheck", methods=["GET"])
     def heathcheck() -> Response:
         return make_response(jsonify({"message": "OK"}), 200)
+    
+    # 404
+    @app.errorhandler(404)
+    def not_found(error) -> Response:
+        return make_response(jsonify({"error": "Not found"}), 404)
+    
+    # 500
+    @app.errorhandler(500)
+    def internal_server_error(error) -> Response:
+        return make_response(jsonify({"error": "Internal server error"}), 500)
+    
+    # 400
+    @app.errorhandler(400)
+    def bad_request(error) -> Response:
+        return make_response(jsonify({"error": "Bad request"}), 400)
+    
+    # -------------------------------------------------------------------------------- #
+    # -------------------------------------------------------------------------------- #
+    # -------------------------------------------------------------------------------- #
