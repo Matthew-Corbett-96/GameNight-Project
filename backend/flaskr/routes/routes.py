@@ -1,7 +1,7 @@
 from flask import Flask, Response, request, jsonify, make_response
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
-from ..models.models import db, User, Game, GameNight, GameNightGame, Attendance, Announcement
+from ..models.models import db, User, Game, GameNight, Round, RSVPLog, Notification
 from uuid import UUID # used for generating unique ids
 
 def setup_routes(app: Flask, api: Api) -> None:
@@ -11,7 +11,7 @@ def setup_routes(app: Flask, api: Api) -> None:
             if game_id is None:
                 games = Game.query.all()
                 games_dict = [
-                    game.to_dict() for game in games   # convert each game to a dictionary
+                    game.to_dict() for game in games   
                 ]
                 return make_response(jsonify(games_dict), 200)
 
@@ -27,7 +27,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             game: Game = Game(
                 name=data["name"],
                 description=data["description"],
-                game_type=data["game_type"],
                 min_players=data["min_players"],
                 max_players=data["max_players"],
             )
@@ -42,7 +41,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             if game:
                 game.name = data["name"]
                 game.description = data["description"]
-                game.game_type = data["game_type"]
                 game.min_players = data["min_players"]
                 game.max_players = data["max_players"]
                 db.session.commit()
@@ -56,7 +54,7 @@ def setup_routes(app: Flask, api: Api) -> None:
             if game:
                db.session.delete(game)
                db.session.commit()
-               return make_response(f"{game} was removed.", 200)
+               return make_response(200)
             
             return make_response(jsonify({"message": "Game not found."}), 404)
 
@@ -84,7 +82,9 @@ def setup_routes(app: Flask, api: Api) -> None:
                 gender=["gender"],
                 email=data["email"],
                 phone_number=data["phone_number"],
-                password=data["password"]
+                password=data["password"],
+                role_id=data["role_id"],
+                is_active=data["is_active"]
             )
             db.session.add(user)
             db.session.commit()
@@ -102,6 +102,8 @@ def setup_routes(app: Flask, api: Api) -> None:
                 user.email = data["email"]
                 user.phone_number = data["phone_number"]
                 user.password = data["password"]
+                user.role_id = data["role_id"]
+                user.is_active = data["is_active"]
                 db.session.commit()
                 return make_response(jsonify(user.to_dict()), 200)
             
@@ -113,7 +115,7 @@ def setup_routes(app: Flask, api: Api) -> None:
             if user:
                 db.session.delete(user)
                 db.session.commit()
-                return make_response(f"{user} was removed.", 200)
+                return make_response(200)
             
             return make_response(jsonify({"message": "User not found."}), 404)
 
@@ -158,188 +160,166 @@ def setup_routes(app: Flask, api: Api) -> None:
             if game_night:
                 db.session.delete(game_night)
                 db.session.commit()
-                return make_response(f"{game_night} was removed.", 200)
+                return make_response(200)
             
             return make_response(jsonify({"message": "Game night not found."}), 404)
         
-    # GameNightGame model
-    class GameNightGameRestClass(Resource):
+    # GamesPlayed model
+    class RoundRestClass(Resource):
         
-        def get(self, game_night_game_id=None) -> Response:
-            if game_night_game_id is None:
-                game_night_games = GameNightGame.query.all()
-                game_night_games_dict = [game_night_game.to_dict() for game_night_game in game_night_games]
-                return make_response(jsonify(game_night_games_dict), 200)
+        def get(self, round_id=None) -> Response:
+            if round_id is None:
+                rounds = Round.query.all()
+                results_dict = [round.to_dict() for round in rounds]
+                return make_response(jsonify(results_dict), 200)
 
-            game_night_game_id: UUID = UUID(game_night_game_id)
-            game_night_game: GameNightGame = GameNightGame.query.filter_by(id=game_night_game_id).first()
-            if game_night_game:
-                return make_response(jsonify(game_night_game.to_dict()), 200)
+            round_id: UUID = UUID(round_id)
+            round: Round = Round.query.filter_by(id=round_id).first()
+            if round:
+                return make_response(jsonify(round.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Game night game not found."}), 404)
+            return make_response(jsonify({"message": "Round not found."}), 404)
         
         def post(self) -> Response:
             data = request.json
-            game_night_game: GameNightGame = GameNightGame(
+            round: Round = Round(
                 game_night_id=data["game_night_id"],
                 game_id=data["game_id"]
             )
-            db.session.add(game_night_game)
+            db.session.add(round)
             db.session.commit()
-            return make_response(jsonify(game_night_game.to_dict()), 200)
+            return make_response(jsonify(round.to_dict()), 200)
         
-        def put(self, game_night_game_id) -> Response:
-            game_night_game_id: UUID = UUID(game_night_game_id)
+        def put(self, round_id) -> Response:
+            round_id: UUID = UUID(round_id)
             data = request.json
-            game_night_game: GameNightGame = GameNightGame.query.filter_by(id=game_night_game_id).first()
-            if game_night_game:
-                game_night_game.game_night_id = data["game_night_id"]
-                game_night_game.game_id = data["game_id"]
+            round: Round = Round.query.filter_by(id=round_id).first()
+            if round:
+                round.game_night_id = data["game_night_id"]
+                round.game_id = data["game_id"]
                 db.session.commit()
-                return make_response(jsonify(game_night_game.to_dict()), 200)
+                return make_response(jsonify(round.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Game night game not found."}), 404)
+            return make_response(jsonify({"message": "Round not found."}), 404)
         
-        def delete(self, game_night_game_id) -> Response:
-            game_night_game_id: UUID = UUID(game_night_game_id)
-            game_night_game: GameNightGame = GameNightGame.query.filter_by(id=game_night_game_id).first()
-            if game_night_game:
-                db.session.delete(game_night_game)
+        def delete(self, round_id) -> Response:
+            round_id: UUID = UUID(round_id)
+            round: Round = Round.query.filter_by(id=round_id).first()
+            if round:
+                db.session.delete(round)
                 db.session.commit()
-                return make_response(f"{game_night_game} was removed.", 200)
+                return make_response(200)
             
-            return make_response(jsonify({"message": "Game night game not found."}), 404)
+            return make_response(jsonify({"message": "Round not found."}), 404)
 
 
-    # Attendance model
-    class AttendanceRestClass(Resource):
-        def get(self, attendance_id=None) -> Response:
+    # RSVPLog model
+    class RSVPLogRestClass(Resource):
+        def get(self, id=None) -> Response:
 
             args: dict[str,str] = request.args
             user_id: str = args.get("user_id")
             game_night_id: str = args.get("game_night_id")
 
             # When an attendance_id is provided, return the attendance with that id
-            if attendance_id is not None:
-                attendance_id: UUID = UUID(attendance_id)
-                attendance: Attendance = Attendance.query.filter_by(id=attendance_id).first()
-                if attendance:
-                    return make_response(jsonify(attendance.to_dict()), 200)
+            if id is not None:
+                id: UUID = UUID(id)
+                rsvp: RSVPLog = RSVPLog.query.filter_by(id=id).first()
+                if rsvp:
+                    return make_response(jsonify(rsvp.to_dict()), 200)
                 
-                return make_response(jsonify({"message": "Attendance not found."}), 404)
+                return make_response(jsonify({"message": "RSVP not found."}), 404)
             
             # Filter attendances by user_id or game_night_id
-            query = Attendance.query
+            query = RSVPLog.query
             if user_id is not None:
                 user_id: UUID = UUID(user_id)
                 query = query.filter_by(user_id=user_id)
             if game_night_id is not None:
                 game_night_id: UUID = UUID(game_night_id)
                 query = query.filter_by(game_night_id=game_night_id)
-            attendances = query.all()
-            attendances_list: list = [attendance.to_dict() for attendance in attendances]
-            return make_response(jsonify(attendances_list), 200)
+            rsvps = query.all()
+            results: list = [rsvp.to_dict() for rsvp in rsvps]
+            return make_response(jsonify(results), 200)
 
         def post(self) -> Response:
             data = request.json
-            attendance: Attendance = Attendance(
+            rsvp: RSVPLog = RSVPLog(
                 user_id=data["user_id"],
                 game_night_id=data["game_night_id"],
                 status=data["status"]
             )
-            db.session.add(attendance)
+
+            rsvpLog: RSVPLog = RSVPLog.query.filter_by(user_id=data["user_id"], game_night_id=data["game_night_id"]).first()
+            if rsvpLog:
+                rsvpLog.status = data["status"]
+                db.session.commit()
+                return make_response(jsonify(rsvpLog.to_dict()), 200)
+
+            db.session.add(rsvp)
             db.session.commit()
-            return make_response(jsonify(attendance.to_dict()), 200)
+            return make_response(jsonify(rsvp.to_dict()), 200)
         
-        def put(self, attendance_id) -> Response:
-            attendance_id: UUID = UUID(attendance_id)
-            data = request.json
-            attendance: Attendance = Attendance.query.filter_by(id=attendance_id).first()
-            if attendance:
-                attendance.user_id = data["user_id"]
-                attendance.game_night_id = data["game_night_id"]
-                attendance.status = data["status"]
+        def delete(self, id) -> Response:
+            id: UUID = UUID(id)
+            rsvp: RSVPLog = RSVPLog.query.filter_by(id=id).first()
+            if rsvp:
+                db.session.delete(rsvp)
                 db.session.commit()
-                return make_response(jsonify(attendance.to_dict()), 200)
+                return make_response(200)
             
-            return make_response(jsonify({"message": "Attendance not found."}), 404)
-        
-        def delete(self, attendance_id) -> Response:
-            attendance_id: UUID = UUID(attendance_id)
-            attendance: Attendance = Attendance.query.filter_by(id=attendance_id).first()
-            if attendance:
-                db.session.delete(attendance)
-                db.session.commit()
-                return make_response(f"{attendance} was removed.", 200)
+            return make_response(jsonify({"message": "Not found."}), 404)
+
+    class NotificationRestClass(Resource):
+
+        def get(self, notification_id=None) -> Response:
+            if notification_id is None:
+                notifications = Notification.query.all()
+                notifications_dict = [notification.to_dict() for notification in notifications]
+                return make_response(jsonify(notifications_dict), 200)
+
+            notification_id: UUID = UUID(notification_id)
+            notification: Notification = Notification.query.filter_by(id=notification_id).first()
+            if notification:
+                return make_response(jsonify(notification.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Attendance not found."}), 404)
-        
-
-    # Announcment model
-    class AnnouncementRestClass(Resource):
-        def get(self, announcement_id=None) -> Response:
-
-            args = request.args
-            active: bool = args.get("active")
-
-            # When an announcement_id is provided, return the announcement with that id
-            if announcement_id is not None:
-                announcement_id: UUID = UUID(announcement_id)
-                announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-                if announcement:
-                    return make_response(jsonify(announcement.to_dict()), 200)
-                
-                return make_response(jsonify({"message": "Announcement not found."}), 404)
-
-            # Filter announcements by active if provided
-            query = Announcement.query
-            if active is not None:
-                if active.lower() == "true":
-                    active = True
-                elif active.lower() == "false":
-                    active = False
-                else:
-                    return make_response(jsonify({"message": "Invalid active value."}), 400)
-                query = query.filter(Announcement.is_active == active)
-            announcements = query.all()
-            announcements_list = [announcement.to_dict() for announcement in announcements]
-            return make_response(jsonify(announcements_list), 200)
-        
+            return make_response(jsonify({"message": "Notification not found."}), 404)
+    
         def post(self) -> Response:
             data = request.json
-            announcement: Announcement = Announcement(
-                user_id=data["user_id"],
+            notification: Notification = Notification(
+                message=data["message"],
                 start_date=data["start_date"],
                 end_date=data["end_date"],
-                content=data["content"]
+                channel=data["channel"],
+                notification_type=data["notification_type"]
             )
-            db.session.add(announcement)
+            db.session.add(notification)
             db.session.commit()
-            return make_response(jsonify(announcement.to_dict()), 200)
-        
-        def put(self, announcement_id) -> Response:
-            announcement_id: UUID = UUID(announcement_id)
+            return make_response(jsonify(notification.to_dict()), 200)
+    
+        def put(self, notification_id) -> Response:
             data = request.json
-            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-            if announcement:
-                announcement.user_id = data["user_id"]
-                announcement.start_date = data["start_date"]
-                announcement.end_date = data["end_date"]
-                announcement.content = data["content"]
+            notification: Notification = Notification.query.filter_by(id=notification_id).first()
+            if notification:
+                notification.message = data["message"]
+                notification.start_date = data["start_date"]
+                notification.end_date = data["end_date"]
+                notification.channel = data["channel"]
+                notification.notification_type = data["notification_type"]
                 db.session.commit()
-                return make_response(jsonify(announcement.to_dict()), 200)
+                return make_response(jsonify(notification.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Announcement not found."}), 404)
-        
-        def delete(self, announcement_id) -> Response:
-            announcement_id: UUID = UUID(announcement_id)
-            announcement: Announcement = Announcement.query.filter_by(id=announcement_id).first()
-            if announcement:
-                db.session.delete(announcement)
+            return make_response(jsonify({"message": "Notification not found."}), 404)
+    
+        def delete(self, notification_id) -> Response:
+            notification: Notification = Notification.query.filter_by(id=notification_id).first()
+            if notification:
+                db.session.delete(notification)
                 db.session.commit()
-                return make_response(f"{announcement} was removed.", 200)
+                return make_response(200)
             
-            return make_response(jsonify({"message": "Announcement not found."}), 404)
+            return make_response(jsonify({"message": "Notification not found."}), 404)
         
     # Add resources to api
     api.add_resource(GameRestClass, 
@@ -354,20 +334,19 @@ def setup_routes(app: Flask, api: Api) -> None:
                      "/game_nights/", 
                      "/game_nights/<string:game_night_id>"
                      )
-    api.add_resource(AttendanceRestClass, 
-                     "/attendances/", 
-                     "/attendances/<string:attendance_id>", 
-                     "/attendances/?user_id=<string:user_id>", 
-                     "/attendances/?game_night_id=<string:game_night_id>"
+    api.add_resource(RSVPLogRestClass, 
+                     "/rsvps/", 
+                     "/rsvps/<string:rsvp_id>", 
+                     "/rsvps/?user_id=<string:user_id>", 
+                     "/rsvp/?game_night_id=<string:game_night_id>"
                      )
-    api.add_resource(AnnouncementRestClass, 
-                     "/announcements/", 
-                     "/announcements/<string:announcement_id>", 
-                     "/announcements/?active=<string:active>"
-                     )
-    api.add_resource(GameNightGameRestClass,
-                    "/game_night_games/",
-                    "/game_night_games/<string:game_night_game_id>"
+    api.add_resource(RoundRestClass,
+                    "/rounds/",
+                    "/rounds/<string:round_id>"
+                    )
+    api.add_resource(NotificationRestClass,
+                    "/notifications/",
+                    "/notifications/<uuid:notification_id>"
                     )
 
     # Healthcheck

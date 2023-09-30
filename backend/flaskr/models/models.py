@@ -37,14 +37,25 @@ class User(db.Model, MixinBase):
     gender = db.Column(db.String(10))
     email = db.Column(db.String(120), index=True, unique=True)
     phone_number = db.Column(db.String(20), unique=True)
+    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey("user_roles.id"))
+    role = db.relationship("UserRole", backref="users")
     password = db.Column(db.String(128))
-    announcements = db.relationship("Announcement")
+    is_active = db.Column(db.Boolean, default=True)
+    RSVPLogs = db.relationship("RSVPLog")
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["announcements"] = [announcement.to_dict() for announcement in self.announcements]
+        base_dict["role_name"] = self.role.role_name
+        base_dict["RSVPs"] = [rsvp_log.to_dict() for rsvp_log in self.RSVPLogs]
         return base_dict
 
+
+class UserRole(db.Model, MixinBase):
+    __tablename__ = "user_roles"
+
+    role_name = db.Column(db.String(50), unique=True, nullable=False)
+    permissions = db.Column(db.String(200))  # This can be a comma-separated string of permissions or a JSON field
+    # USERS
 
 # Game model
 class Game(db.Model, MixinBase):
@@ -52,7 +63,6 @@ class Game(db.Model, MixinBase):
 
     name = db.Column(db.String(64), unique=True)
     description = db.Column(db.String(256))
-    game_type = db.Column(db.String(64))
     min_players = db.Column(db.Integer)
     max_players = db.Column(db.Integer)
 
@@ -62,24 +72,24 @@ class GameNight(db.Model, MixinBase):
     __tablename__ = "game_nights"
 
     date = db.Column(db.DateTime, server_default=func.now())
-    games = db.relationship("GameNightGame")
-    attendance = db.relationship("Attendance")
+    rounds = db.relationship("Round", backref="game_night")
+    rsvp_logs = db.relationship("RSVPLog")
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["games"] = [game_night_game.game.name for game_night_game in self.games]
-        base_dict["attendance"] = [attendance.to_dict() for attendance in self.attendance]
+        base_dict["games"] = [round.game.name for round in self.rounds]
+        base_dict["RSVPs"] = [rsvp_log.to_dict() for rsvp_log in self.rsvp_logs]
         return base_dict
 
 
-# GameNightGame model
-class GameNightGame(db.Model, MixinBase):
-    __tablename__ = "game_night_games"
+# Round model
+class Round(db.Model, MixinBase):
+    __tablename__ = "rounds"
 
     game_night_id = db.Column(UUID, db.ForeignKey("game_nights.id"))
     game_night = db.relationship("GameNight") # this is redundant, but it's here for the sake of clarity
     game_id = db.Column(UUID, db.ForeignKey("games.id"))
-    game = db.relationship("Game") # this is redundant, but it's here for the sake of clarity
+    game = db.relationship("Game")
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
@@ -88,29 +98,10 @@ class GameNightGame(db.Model, MixinBase):
         return base_dict
 
 
-# Attendance model
-class Attendance(db.Model, MixinBase):
-    __tablename__ = "attendance"
-
-    user_id = db.Column(UUID, db.ForeignKey("users.id"))
-    user = db.relationship("User") # this is redundant, but it's here for the sake of clarity
-    game_night_id = db.Column(UUID, db.ForeignKey("game_nights.id"))
-    game_night = db.relationship("GameNight") # this is redundant, but it's here for the sake of clarity
-    status = db.Column(db.String(10))  # statuses: Attending, Not Attending, Maybe
-
-    def to_dict(self) -> dict:
-        base_dict = super().to_dict()
-        base_dict["username"] = self.user.username
-        base_dict["game_night_date"] = self.game_night.date
-        return base_dict
-
-
 # Announcement model
 class Announcement(db.Model, MixinBase):
     __tablename__ = "announcements"
 
-    user_id = db.Column(UUID, db.ForeignKey("users.id"))
-    user = db.relationship("User") # this is redundant, but it's here for the sake of clarity
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     content = db.Column(db.String(200))
@@ -125,10 +116,34 @@ class Announcement(db.Model, MixinBase):
     
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["user_name"] = self.user.username
         base_dict["is_active"] = self.is_active
         return base_dict
-    
+
+# RSVPLog model
+class RSVPLog(db.Model, MixinBase):
+    __tablename__ = "rsvp_logs"
+    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"), nullable=False)
+    user_name = db.relationship("User", backref="rsvp_logs")
+    game_night_id = db.Column(UUID(as_uuid=True), db.ForeignKey("game_nights.id"), nullable=False)
+    game_night = db.relationship("GameNight", backref="rsvp_logs")
+    response_date = db.Column(db.DateTime, server_default=func.now())
+    response_status = db.Column(db.String(20)) # response_status can be attending, not attending, or maybe
+
+    def to_dict(self) -> dict:
+        base_dict = super().to_dict()
+        base_dict["user_name"] = self.user.username
+        base_dict["game_night_date"] = self.game_night.date
+        return base_dict
+
+# Notification model
+class Notification(db.Model, MixinBase):
+    __tablename__ = "notifications"
+    message = db.Column(db.String(256))    
+    start_date = db.Column(db.DateTime, nullable=True)
+    end_date = db.Column(db.DateTime, nullable=True)
+    sent_date = db.Column(db.DateTime, server_default=func.now())
+    channel = db.Column(db.String(20)) # channel can be sms, or website
+    notification_type = db.Column(db.String(20)) # notification_type can be announcement, or reminder, or alert
 
 
 def init_app(app: Flask):
