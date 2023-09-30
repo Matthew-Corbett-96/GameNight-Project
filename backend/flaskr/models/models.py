@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
 import uuid
+from .tools import to_list, get_value_or_none
 
 db = SQLAlchemy()
 
@@ -37,16 +38,16 @@ class User(db.Model, MixinBase):
     gender = db.Column(db.String(10))
     email = db.Column(db.String(120), index=True, unique=True)
     phone_number = db.Column(db.String(20), unique=True)
-    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey("user_roles.id"))
+    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey("user_roles.id"), nullable=True)
     role = db.relationship("UserRole", backref="users")
     password = db.Column(db.String(128))
     is_active = db.Column(db.Boolean, default=True)
-    RSVPLogs = db.relationship("RSVPLog")
+    # rsvp_logs
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["role_name"] = self.role.role_name
-        base_dict["RSVPs"] = [rsvp_log.to_dict() for rsvp_log in self.RSVPLogs]
+        base_dict["RSVPs"] = to_list(self.rsvp_logs)
+        base_dict["role_name"] = get_value_or_none(self.role, "role_name")
         return base_dict
 
 
@@ -56,6 +57,11 @@ class UserRole(db.Model, MixinBase):
     role_name = db.Column(db.String(50), unique=True, nullable=False)
     permissions = db.Column(db.String(200))  # This can be a comma-separated string of permissions or a JSON field
     # USERS
+
+    def to_dict(self) -> dict:
+        base_dict = super().to_dict()
+        base_dict["users"] = to_list(self.users, ["username", "id"])
+        return base_dict
 
 # Game model
 class Game(db.Model, MixinBase):
@@ -73,12 +79,12 @@ class GameNight(db.Model, MixinBase):
 
     date = db.Column(db.DateTime, server_default=func.now())
     rounds = db.relationship("Round", backref="game_night")
-    rsvp_logs = db.relationship("RSVPLog")
+    # rsvp_logs 
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["games"] = [round.game.name for round in self.rounds]
-        base_dict["RSVPs"] = [rsvp_log.to_dict() for rsvp_log in self.rsvp_logs]
+        base_dict["Rounds"] = to_list(self.rounds, ["game_name"])
+        base_dict["RSVPs"] = to_list(self.rsvp_logs)
         return base_dict
 
 
@@ -87,14 +93,14 @@ class Round(db.Model, MixinBase):
     __tablename__ = "rounds"
 
     game_night_id = db.Column(UUID, db.ForeignKey("game_nights.id"))
-    game_night = db.relationship("GameNight") # this is redundant, but it's here for the sake of clarity
+    # game_night
     game_id = db.Column(UUID, db.ForeignKey("games.id"))
     game = db.relationship("Game")
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["game_night_date"] = self.game_night.date
-        base_dict["game_name"] = self.game.name
+        base_dict["game_night_date"] = get_value_or_none(self.game_night, "date")
+        base_dict["game_name"] = get_value_or_none(self.game, "name")
         return base_dict
 
 
@@ -131,8 +137,8 @@ class RSVPLog(db.Model, MixinBase):
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["user_name"] = self.user.username
-        base_dict["game_night_date"] = self.game_night.date
+        base_dict["user_name"] = get_value_or_none(self.user_name, "username")
+        base_dict["game_night_date"] = get_value_or_none(self.game_night, "date")
         return base_dict
 
 # Notification model
