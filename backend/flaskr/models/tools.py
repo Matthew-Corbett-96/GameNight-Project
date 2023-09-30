@@ -94,7 +94,7 @@ def to_list_with_attrs(array: list | None, attrs: list[str]) -> list:
    if is_null(array) or len(array) == 0:
       return []
    
-   results: list[dict] = [{}]
+   results: list[dict] = []
    for item in array:
       dic: dict = create_dict(item, attrs)
       results.append(dic)

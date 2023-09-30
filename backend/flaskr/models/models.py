@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
 import uuid
-from .tools import to_list, get_value
+from .tools import to_list, get_value_or_none
 
 db = SQLAlchemy()
 
@@ -47,7 +47,7 @@ class User(db.Model, MixinBase):
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
         base_dict["RSVPs"] = to_list(self.rsvp_logs)
-        base_dict["role_name"] = get_value(self.role, "role_name")
+        base_dict["role_name"] = get_value_or_none(self.role, "role_name")
         return base_dict
 
 
@@ -83,7 +83,7 @@ class GameNight(db.Model, MixinBase):
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["Rounds"] = to_list(self.rounds, "game_name")
+        base_dict["Rounds"] = to_list([round.game for round in self.rounds], ["name"])
         base_dict["RSVPs"] = to_list(self.rsvp_logs)
         return base_dict
 
@@ -99,8 +99,8 @@ class Round(db.Model, MixinBase):
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["game_night_date"] = get_value(self.game_night, "date")
-        base_dict["game_name"] = get_value(self.game, "name")
+        base_dict["game_night_date"] = get_value_or_none(self.game_night, "date")
+        base_dict["game_name"] = get_value_or_none(self.game, "name")
         return base_dict
 
 
@@ -137,8 +137,8 @@ class RSVPLog(db.Model, MixinBase):
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()
-        base_dict["user_name"] = get_value(self.user_name, "username")
-        base_dict["game_night_date"] = get_value(self.game_night, "date")
+        base_dict["user_name"] = get_value_or_none(self.user_name, "username")
+        base_dict["game_night_date"] = get_value_or_none(self.game_night, "date")
         return base_dict
 
 # Notification model
