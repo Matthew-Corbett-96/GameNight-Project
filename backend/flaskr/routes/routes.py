@@ -131,10 +131,11 @@ def setup_routes(app: Flask, api: Api) -> None:
                 return make_response(jsonify(game_nights_dict), 200)
 
             game_night: GameNight = GameNight.query.filter_by(id=game_night_id).first()
-            if game_night:
-                return make_response(jsonify(game_night.to_dict()), 200)
+            if game_night is None:
+                return make_response(jsonify({"message": "Game night not found."}), 404)
+                
+            return make_response(jsonify(game_night.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Game night not found."}), 404)
         
         def post(self) -> Response:
             data = request.json
@@ -147,22 +148,25 @@ def setup_routes(app: Flask, api: Api) -> None:
         
         def put(self, game_night_id) -> Response:
             data = request.json
+
             game_night: GameNight = GameNight.query.filter_by(id=game_night_id).first()
-            if game_night:
-                game_night.date = data["date"]
-                db.session.commit()
-                return make_response(jsonify(game_night.to_dict()), 200)
+            if game_night is None:
+                return make_response(jsonify({"message": "Game night not found."}), 404)
             
-            return make_response(jsonify({"message": "Game night not found."}), 404)
+            game_night.date = data["date"]
+            db.session.commit()
+            return make_response(jsonify(game_night.to_dict()), 200)
+            
         
         def delete(self, game_night_id) -> Response:
             game_night: GameNight = GameNight.query.filter_by(id=game_night_id).first()
-            if game_night:
-                db.session.delete(game_night)
-                db.session.commit()
-                return make_response(f'{game_night_id} Deleted', 200)
+            if game_night is None:
+                return make_response(jsonify({"message": "Game night not found."}), 404)
+
+            db.session.delete(game_night)
+            db.session.commit()
+            return make_response(f'{game_night_id} Deleted', 200)
             
-            return make_response(jsonify({"message": "Game night not found."}), 404)
         
     # Round model
     class RoundRestClass(Resource):
@@ -174,10 +178,11 @@ def setup_routes(app: Flask, api: Api) -> None:
                 return make_response(jsonify(results_dict), 200)
 
             round: Round = Round.query.filter_by(id=round_id).first()
-            if round:
-                return make_response(jsonify(round.to_dict()), 200)
+            if round is None:
+                return make_response(jsonify({"message": "Round not found."}), 404)
             
-            return make_response(jsonify({"message": "Round not found."}), 404)
+            return make_response(jsonify(round.to_dict()), 200)
+            
         
         def post(self) -> Response:
             data = request.json
@@ -200,23 +205,26 @@ def setup_routes(app: Flask, api: Api) -> None:
         
         def put(self, round_id) -> Response:
             data = request.json
+
             round: Round = Round.query.filter_by(id=round_id).first()
-            if round:
-                round.game_night_id = data["game_night_id"]
-                round.game_id = data["game_id"]
-                db.session.commit()
-                return make_response(jsonify(round.to_dict()), 200)
+            if round is None:
+                return make_response(jsonify({"message": "Round not found."}), 404)
+
+            round.game_night_id = data["game_night_id"]
+            round.game_id = data["game_id"]
+            db.session.commit()
+            return make_response(jsonify(round.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Round not found."}), 404)
         
         def delete(self, round_id) -> Response:
             round: Round = Round.query.filter_by(id=round_id).first()
-            if round:
-                db.session.delete(round)
-                db.session.commit()
-                return make_response(f'{round_id} Deleted',  200)
+            if round is None:
+                return make_response(jsonify({"message": "Round not found."}), 404)
+
+            db.session.delete(round)
+            db.session.commit()
+            return make_response(f'{round_id} Deleted',  200)
             
-            return make_response(jsonify({"message": "Round not found."}), 404)
 
     # RSVPLog model
     class RSVPLogRestClass(Resource):
@@ -291,10 +299,10 @@ def setup_routes(app: Flask, api: Api) -> None:
                 return make_response(jsonify(notifications_dict), 200)
 
             notification: Notification = Notification.query.filter_by(id=notification_id).first()
-            if notification:
-                return make_response(jsonify(notification.to_dict()), 200)
+            if notification is None:
+                return make_response(jsonify({"message": "Notification not found."}), 404)
             
-            return make_response(jsonify({"message": "Notification not found."}), 404)
+            return make_response(jsonify(notification.to_dict()), 200)
     
         def post(self) -> Response:
             data = request.json
@@ -311,26 +319,30 @@ def setup_routes(app: Flask, api: Api) -> None:
     
         def put(self, notification_id) -> Response:
             data = request.json
+
             notification: Notification = Notification.query.filter_by(id=notification_id).first()
-            if notification:
-                notification.message = data["message"]
-                notification.start_date = data["start_date"]
-                notification.end_date = data["end_date"]
-                notification.channel = data["channel"]
-                notification.notification_type = data["notification_type"]
-                db.session.commit()
-                return make_response(jsonify(notification.to_dict()), 200)
+            if notification is None:
+                return make_response(jsonify({"message": "Notification not found."}), 404)
+
+            notification.message = data["message"]
+            notification.start_date = data["start_date"]
+            notification.end_date = data["end_date"]
+            notification.channel = data["channel"]
+            notification.notification_type = data["notification_type"]
+            db.session.commit()
+            return make_response(jsonify(notification.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Notification not found."}), 404)
     
         def delete(self, notification_id) -> Response:
+
             notification: Notification = Notification.query.filter_by(id=notification_id).first()
-            if notification:
-                db.session.delete(notification)
-                db.session.commit()
-                return make_response(f'{notification_id} Deleted', 200)
+            if notification is None:
+                return make_response(jsonify({"message": "Notification not found."}), 404)
+
+            db.session.delete(notification)
+            db.session.commit()
+            return make_response(f'{notification_id} Deleted', 200)
             
-            return make_response(jsonify({"message": "Notification not found."}), 404)
         
     class UserRoleRestClass(Resource):
         def get(self, role_id=None) -> Response:
@@ -340,10 +352,11 @@ def setup_routes(app: Flask, api: Api) -> None:
                 return make_response(jsonify(roles_dict), 200)
 
             role: UserRole = UserRole.query.filter_by(id=role_id).first()
-            if role:
-                return make_response(jsonify(role.to_dict()), 200)
+            if role is None:
+                return make_response(jsonify({"message": "Role not found."}), 404)
             
-            return make_response(jsonify({"message": "Role not found."}), 404)
+            return make_response(jsonify(role.to_dict()), 200)
+            
         
         def post(self) -> Response:
             data = request.json
@@ -357,23 +370,26 @@ def setup_routes(app: Flask, api: Api) -> None:
         
         def put(self, role_id) -> Response:
             data = request.json
+
             role: UserRole = UserRole.query.filter_by(id=role_id).first()
-            if role:
-                role.role_name = data["role"]
-                role.permissions = data["permissions"]
-                db.session.commit()
-                return make_response(jsonify(role.to_dict()), 200)
+            if role is None:
+                return make_response(jsonify({"message": "Role not found."}), 404)
+
+            role.role_name = data["role"]
+            role.permissions = data["permissions"]
+            db.session.commit()
+            return make_response(jsonify(role.to_dict()), 200)
             
-            return make_response(jsonify({"message": "Role not found."}), 404)
         
         def delete(self, role_id) -> Response:
             role: UserRole = UserRole.query.filter_by(id=role_id).first()
-            if role:
-                db.session.delete(role)
-                db.session.commit()
-                return make_response(f'{role_id} Deleted', 200)
+            if role is None:
+                return make_response(jsonify({"message": "Role not found."}), 404)
+
+            db.session.delete(role)
+            db.session.commit()
+            return make_response(f'{role_id} Deleted', 200)
             
-            return make_response(jsonify({"message": "Role not found."}), 404)
 
     # Add resources to api
     api.add_resource(GameRestClass, 
@@ -416,7 +432,7 @@ def setup_routes(app: Flask, api: Api) -> None:
     # 404
     @app.errorhandler(404)
     def not_found(error) -> Response:
-        return make_response(jsonify({"error": "Not found"}), 404)
+        return make_response(jsonify({"error": "Path Not found"}), 404)
     
     # 500
     @app.errorhandler(500)
