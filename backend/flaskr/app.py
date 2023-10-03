@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restful import Api
 import os
 from .routes.routes import setup_routes
@@ -9,6 +10,11 @@ def create_app() -> Flask:
     app = Flask(__name__)
     api = Api(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
+    CORS(app, 
+         origins=["http://localhost:3000"],
+         methods=['GET', 'POST', 'PUT', 'OPTIONS', 'DELETE'],
+         allow_headers=['Origin', 'Content-Type', 'Accept']
+         )
     init_app(app)
     Migrate(app, db)
     setup_routes(app, api)

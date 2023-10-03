@@ -4,6 +4,7 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from ..models.models import db, User, Game, GameNight, Round, RSVPLog, Notification, UserRole
 from uuid import UUID # used for generating unique ids
+from .tools import Response200, Response400, Response401, Response404, Response500
 
 def setup_routes(app: Flask, api: Api) -> None:
     # Game model
@@ -167,7 +168,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             db.session.commit()
             return make_response(f'{game_night_id} Deleted', 200)
             
-        
     # Round model
     class RoundRestClass(Resource):
         
@@ -225,7 +225,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             db.session.commit()
             return make_response(f'{round_id} Deleted',  200)
             
-
     # RSVPLog model
     class RSVPLogRestClass(Resource):
         def get(self, id=None) -> Response:
@@ -343,7 +342,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             db.session.commit()
             return make_response(f'{notification_id} Deleted', 200)
             
-        
     class UserRoleRestClass(Resource):
         def get(self, role_id=None) -> Response:
             if role_id is None:
@@ -390,6 +388,24 @@ def setup_routes(app: Flask, api: Api) -> None:
             db.session.commit()
             return make_response(f'{role_id} Deleted', 200)
             
+    class LoginRestClass(Resource):
+        def post(self) -> Response:
+            data = request.json
+            user: User = User.query.filter_by(email=data["email"]).first()
+            if user is None:
+                return make_response(jsonify(Response404().to_dict()), 404)
+            
+            if user.password != data["password"]:
+                return make_response(jsonify(Response401().to_dict()), 401)
+            
+            response: Response200 = Response200(data=user.to_dict())
+            return make_response(jsonify(response.to_dict()), 200)
+        
+
+
+
+
+
 
     # Add resources to api
     api.add_resource(GameRestClass, 
@@ -422,6 +438,10 @@ def setup_routes(app: Flask, api: Api) -> None:
     api.add_resource(UserRoleRestClass,
                     "/roles/",
                     "/roles/<uuid:role_id>"
+                    )
+    
+    api.add_resource(LoginRestClass,
+                    "/login/"
                     )
     
     # Healthcheck

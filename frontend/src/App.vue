@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TopBar from './components/TopBar.vue';
+import TopBar from './components/nav/TopBar.vue';
 import { RouterView } from 'vue-router';
 import CustomFooter from './components/CustomFooter.vue';
 
