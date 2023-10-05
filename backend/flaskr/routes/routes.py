@@ -15,13 +15,14 @@ def setup_routes(app: Flask, api: Api) -> None:
                 games_dict = [
                     game.to_dict() for game in games   
                 ]
-                return make_response(jsonify(games_dict), 200)
+                response: Response200 = Response200(data=games_dict)
+                return make_response(jsonify(response.to_dict()), 200)
 
             game: Game = Game.query.filter_by(id=game_id).first()
-            if game:
-                return make_response(jsonify(game.to_dict()), 200)
+            if game is None:
+                return make_response(jsonify(Response404().to_dict()), 404)
             
-            return make_response(jsonify({"message": "Game not found."}), 404)
+            return make_response(jsonify(Response200(data=game.to_dict()).to_dict()), 200)
 
         def post(self) -> Response:
             data = request.json
@@ -33,7 +34,8 @@ def setup_routes(app: Flask, api: Api) -> None:
             )
             db.session.add(game)
             db.session.commit()
-            return make_response(jsonify(game.to_dict()), 200)
+            response = Response200(data=game.to_dict())
+            return make_response(jsonify(response.to_dict()), 200)
 
         def put(self, game_id) -> Response:
             data = request.json
