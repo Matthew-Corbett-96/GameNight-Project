@@ -32,7 +32,7 @@ const props = defineProps({
 const formData: Ref<FormData>  = ref({...props.formData});
 
 watch(() => props.formData, (newFormData) => {
-   formData.value = {...newFormData};
+   Object.assign(formData.value, newFormData);
 });
 
 function submitForm() {
