@@ -37,7 +37,7 @@ const showCreateGameForm: Ref<boolean> = ref(false);
 const showUpdateGameForm: Ref<boolean> = ref(false);
 
 // Form fields and data for the create and update game forms
-const gameformfields: FormField[] = [
+let gameformfields: FormField[] = [
   { label: 'Name', type: 'text' },
   { label: 'Description', type: 'text' },
   { label: 'Min Players', type: 'number' },
