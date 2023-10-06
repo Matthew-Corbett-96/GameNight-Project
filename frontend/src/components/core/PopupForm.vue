@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { defineProps, ref, type Ref } from 'vue';
 import Button from '@/components/core/Button.vue';
+import { watch } from 'vue';
+import { type FormData } from '@/main';
+import { type FormField } from '@/main';
 
-interface FormField {
-   label: string;
-   type: string;
-}
-
-interface FormData {
-   [key: string]: any;
-}
 
 const emit = defineEmits(['cancel', 'submit']);
 
@@ -26,10 +21,19 @@ const props = defineProps({
    formFields: {
       type: Array as () => Array<FormField>, 
       required: true 
+   },
+   formData: {
+      type: Object as () => FormData,
+      default: {},
+      required: false
    }
 });
 
-const formData: Ref<FormData>  = ref({});
+const formData: Ref<FormData>  = ref({...props.formData});
+
+watch(() => props.formData, (newFormData) => {
+   formData.value = {...newFormData};
+});
 
 function submitForm() {
    emit('submit', formData.value);
@@ -52,7 +56,7 @@ function submitForm() {
                   :type="field.type" 
                   :name=field.label 
                   :id=field.label 
-                  v-model="formData[field.label]" 
+                  v-model="formData[field.label]"
                   required 
                   class="form-input"
                   />
