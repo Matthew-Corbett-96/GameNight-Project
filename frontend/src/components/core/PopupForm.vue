@@ -29,7 +29,7 @@ const props = defineProps({
    }
 });
 
-const formData: Ref<FormData>  = ref({...props.formData});
+const formData: Ref<FormData>  = ref(props.formData);
 
 watch(() => props.formData, (newFormData) => {
    Object.assign(formData.value, newFormData);
@@ -37,7 +37,6 @@ watch(() => props.formData, (newFormData) => {
 
 function submitForm() {
    emit('submit', formData.value);
-   formData.value = {};
 }
 
 </script>
@@ -80,13 +79,13 @@ function submitForm() {
    left: 0;
    width: 100%;
    height: 100%;
-   background-color: rgba(0, 0, 0, 0.5);
+   background-color: rgba(183, 183, 183, 0.477);
    display: flex;
    justify-content: center;
    align-items: center;
 }
 .popup-main-content {
-   background-color: white;
+   background-color: rgb(226, 223, 223);
    padding: 1.5rem;
    border-radius: 5px;
    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
