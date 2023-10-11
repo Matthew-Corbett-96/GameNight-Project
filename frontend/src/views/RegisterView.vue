@@ -2,11 +2,7 @@
 </script>
 
 <template>
-  <div class="home">
-    <h1>Reg</h1>
-
-  </div>
+  <h1>Registration</h1>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
