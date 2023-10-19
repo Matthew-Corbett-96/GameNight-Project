@@ -2,9 +2,14 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { createPinia } from 'pinia'
+import { createPersistedState } from 'pinia-plugin-persistedstate'
+import { type } from 'os'
 
+const pinia = createPinia();
+pinia.use(createPersistedState());
 const app = createApp(App)
-app.use(router)
+app.use(router).use(pinia);
 app.mount('#app')
 
 export interface APIResponse {
@@ -14,12 +19,38 @@ export interface APIResponse {
 }
 
 export interface User {
-   id: number
+   id: string
    username: string
+   first_name: string
+   last_name: string
+   gender: Gender
    email: string
+   phone_number: string
+   role_id: string
+   role_name: string
    password: string
-   created_at: string
-   updated_at: string
+   is_active: boolean
+   created_on: string
+   updated_on: string
+   RSVPs: RSVP[]
+}
+
+export interface RSVP {
+   id: string
+   user_id: string
+   user_name: string
+   game_night_id: string
+   game_night: string
+   response_date: string
+   response_status: string
+   created_on: string
+   updated_on: string
+};
+
+export enum Gender {
+   MALE = 'male',
+   FEMALE = 'female',
+   OTHER = 'other'
 }
 
 export interface Game {

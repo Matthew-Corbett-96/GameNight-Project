@@ -105,7 +105,7 @@ function openUpdateForm(game: Game) {
 }
 
 // Functions for submitting the create and update game forms
-function createGame(formData: any) {
+function createGame(formData: GameFormData) {
 
   let headers = new Headers();
   headers.append('Content-Type', 'application/json');
@@ -142,7 +142,7 @@ function createGame(formData: any) {
 }
 
 // Function for submitting the update game form
-function updateGame(formData: any) {
+function updateGame(formData: GameFormData) {
 
   let headers = new Headers();
   headers.append('Content-Type', 'application/json');

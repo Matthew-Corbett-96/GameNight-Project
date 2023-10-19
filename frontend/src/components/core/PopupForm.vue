@@ -39,6 +39,11 @@ function submitForm() {
    emit('submit', formData.value);
 }
 
+function cancel() {
+   emit('cancel');
+   formData.value = {};
+}
+
 </script>
 
 <template>
@@ -49,24 +54,26 @@ function submitForm() {
 
          <section class="main-form">
             <form  @submit.prevent="submitForm" class="form">
-               <div v-for="field in formFields" :key="field.label" class="form-items">
-                  <label :for=field.label class="form-label"> {{ field.label + ' ' }} </label>
-                  <input 
-                  :type="field.type" 
-                  :name=field.label 
-                  :id=field.label 
-                  v-model="formData[field.label]"
-                  required 
-                  class="form-input"
-                  />
+               <div class="fields-container">
+                  <div v-for="field in formFields" :key="field.label" class="form-items">
+                     <label :for=field.label class="form-label"> {{ field.label + ' ' }} </label>
+                     <input 
+                     :type="field.type" 
+                     :name=field.label 
+                     :id=field.label 
+                     v-model="formData[field.label]"
+                     required 
+                     class="form-input"
+                     />
+                  </div>
+               </div>
+               <div class="footer">
+                  <Button text="Submit" @clicked="submit" />
+                  <Button text="Cancel" @clicked="cancel" />
                </div>
             </form>
          </section>
 
-         <div class="footer">
-            <Button text="Submit" @clicked="submitForm" />
-            <Button text="Cancel" @clicked="emit('cancel')" />
-         </div>
 
       </div>
    </div>
@@ -114,10 +121,25 @@ function submitForm() {
 
 .form {
    display: grid;
+   grid-template-columns: 1fr;
+   grid-gap: 1rem;
+   margin-top: 1rem;
+   padding: 0.5rem;
+}
+
+.fields-container {
+   display: grid;
    grid-template-columns: 1fr 1fr;
    grid-gap: 1rem;
    margin-top: 1rem;
    padding: 0.5rem;
+}
+
+.form-items {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
 }
 
 .form-input {
