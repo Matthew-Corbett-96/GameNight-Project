@@ -10,6 +10,7 @@ def create_app() -> Flask:
     app = Flask(__name__)
     api = Api(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
+    app.config['JWT_SECRET_KEY'] = os.environ['JWT_SECRET_KEY']
     CORS(app, 
          origins=["http://localhost:3000"],
          methods=['GET', 'POST', 'PUT', 'OPTIONS', 'DELETE'],

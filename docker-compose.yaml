@@ -23,6 +23,11 @@ services:
       - 3000:3000
     environment:
       - NODE_ENV=development
+      - VITE_AUTH0_DOMAIN=dev-4tze8y46hhx3kohe.us.auth0.com
+      - VITE_AUTH0_CLIENT_ID=6AxtuOgBlRVhv9jVmLNyjbPYV0rb58Xt
+      - VITE_AUTH0_CALLBACK_URL=http://localhost:3000/callback
+      - VITE_API_SERVER_URL=http://localhost:5000
+
     depends_on:
       - db
   
@@ -39,7 +44,11 @@ services:
       - FLASK_APP=flaskr/app.py:create_app()
       - FLASK_ENV=development
       - FLASK_RUN_HOST=0.0.0.0
+      - JWT_SECRET_KEY=SuperSecret
       - DATABASE_URL=postgresql://postgres:postgrespw@db:5432/postgres
+      - CLIENT_ORIGIN_URL=http://localhost:3000
+      - AUTH0_AUDIENCE=Flask-Backend-API
+      - AUTH0_DOMAIN=dev-4tze8y46hhx3kohe.us.auth0.com
     networks:
       - main
     depends_on:

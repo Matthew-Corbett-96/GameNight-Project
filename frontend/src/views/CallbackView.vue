@@ -2,7 +2,11 @@
 </script>
 
 <template>
-  <h1>Registration</h1>
+
+  <div>
+    
+  </div>
+  
 </template>
 
 <style scoped></style>

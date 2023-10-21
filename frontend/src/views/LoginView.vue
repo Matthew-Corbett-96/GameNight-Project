@@ -4,12 +4,22 @@ import { ref } from 'vue';
 import type { Ref } from 'vue';
 import Button from '@/components/core/Button.vue';
 import { useAuthStore } from '@/store/auth';
+import { useAuth0 } from '@auth0/auth0-vue';
 
 const email: Ref<string> = ref('');
 const password: Ref<string> = ref('');
 const showError: Ref<Boolean> = ref(false);
 const error_message: Ref<string> = ref('');
 const authStore = useAuthStore();
+const { loginWithRedirect } = useAuth0();
+
+function handleLogin() {
+  loginWithRedirect({
+    appState: {
+      target: '/games'
+    }
+  });
+}
 
 
 async function login() {
@@ -49,8 +59,8 @@ function clearForm(): void {
           Password:
           <input class="login-input" type="password" v-model="password" required>
         </label>
-        <Button text="Login" @clicked="submit" />
       </form>
+      <Button text="Login1" @clicked="handleLogin" />
 
     </div>
   
@@ -58,7 +68,7 @@ function clearForm(): void {
 </template>
 
 <style scoped>
-i.login-container {
+.login-container {
   display: flex;
   flex-direction: column;
   align-items: center;
