@@ -22,7 +22,13 @@ class MixinBase:
     updated_on = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
 
     def __repr__(self) -> str:
-        return "<{} {}>".format(self.__class__.__name__, self.id)
+        return f"<{self.__class__.__name__} {self.id}>"
+    
+    def __str__(self) -> str:
+        return self.__repr__()
+    
+    def __dict__(self) -> dict:
+        return self.to_dict()
 
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -32,15 +38,15 @@ class MixinBase:
 class User(db.Model, MixinBase):
     __tablename__ = "users"
 
+    auth0_id = db.Column(db.String(64), index=True, unique=True)
     username = db.Column(db.String(64), index=True, unique=True)
-    first_name = db.Column(db.String(64))
-    last_name = db.Column(db.String(64))
-    gender = db.Column(db.String(10))
+    first_name = db.Column(db.String(64), nullable=True)
+    last_name = db.Column(db.String(64), nullable=True)
+    gender = db.Column(db.String(10), nullable=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    phone_number = db.Column(db.String(20), unique=True)
+    phone_number = db.Column(db.String(20), unique=True, nullable=True)
     role_id = db.Column(UUID(as_uuid=True), db.ForeignKey("user_roles.id"), nullable=True)
     role = db.relationship("UserRole", backref="users")
-    password = db.Column(db.String(128))
     is_active = db.Column(db.Boolean, default=True)
     # rsvp_logs
 

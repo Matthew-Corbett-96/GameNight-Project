@@ -3,6 +3,15 @@ class Response_Mixin():
          self.status: int = 200
          self.message: str = ''
          self.data: dict = {}
+      
+      def __repr__(self):
+            return f'<Response {self.status}: {self.message}>'
+      
+      def __str__(self):
+            return f'<Response {self.status}: {self.message}>'
+      
+      def __dict__(self):
+           self.to_dict()
    
       def to_dict(self):
          return {

@@ -1,19 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardView from '@/views/DashboardView.vue'
-import LoginView from '@/views/LoginView.vue'
+import { authGuard } from '@auth0/auth0-vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'dashboard',
-      component: DashboardView
+      name: 'login',
+      component: () => import('@/views/LoginView.vue')
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: () => import('@/views/LoginView.vue')
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('@/views/DashboardView.vue'),
+      beforeEnter: authGuard
     },
     {
       path: '/about',
@@ -21,24 +26,21 @@ const router = createRouter({
       component: () => import('@/views/AboutView.vue')
     },
     {
-      path: '/callback',
-      name: 'callback',
-      component: () => import('../views/CallbackView.vue')
-    },
-    {
-      path: '/profile/:id',
+      path: '/profile',
       name: 'profile',
-      component: () => import('../views/ProfilePageView.vue')
-    },
-    {
-      path: '/profile/:id/edit',
-      name: 'edit-profile',
-      component: () => import('../views/EditProfileView.vue')
+      component: () => import('../views/ProfilePageView.vue'),
+      beforeEnter: authGuard
     },
     {
       path: '/games',
       name: 'games',
-      component: () => import('../views/GamesView.vue')
+      component: () => import('../views/GamesView.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/callback',
+      name: 'callback',
+      component: () => import('../views/CallbackView.vue')
     },
     {
       path: '/:pathMatch(.*)*',

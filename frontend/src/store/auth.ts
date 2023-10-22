@@ -1,14 +1,15 @@
 import { defineStore } from "pinia";
-import { type User } from "../main"
-import { computed, ref, type Ref } from "vue";
+import { computed, type Ref} from "vue";
+import { useAuth0 } from '@auth0/auth0-vue';
+import type { User } from '@auth0/auth0-spa-js';
 
 export const useAuthStore = defineStore(
 
    'auth',
 
    () => {
-      const user = ref<User>({} as User);
-      // const token: Ref<string> = ref('sdhjfgvasdufhgwfuywfgwefbwf');
+
+      const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
 
       const getHeaders = computed(() => {
          let headers = new Headers();
@@ -19,43 +20,83 @@ export const useAuthStore = defineStore(
          return headers;
       });
 
-      const isAuthenticated = computed(() => {
-         return !!user.value;
-         // return !!user.value && !!token.value;
+      const getUser = computed(() => {
+        if (typeof user.value !== 'undefined') {
+           return user.value;
+        } else {
+           return {} as User;
+        }
       });
 
-      async function Login(email: string, password: string): Promise<number> {
+      const isLoggedIn = computed(() => {
+         return isAuthenticated.value;
+      });
+
+      async function Login() {
+         try {
+            loginWithRedirect({
+               appState: {
+                  target: '/profile'
+               }
+            });
+         }
+         catch (e) {
+            console.error(e);
+         }
 
          try {
-            const response = await fetch('http://localhost:5000/login/', {
-               method: 'POST',
-               mode: 'cors',
-               headers: getHeaders.value,
-               body: JSON.stringify({
-                  email,
-                  password
-               })
+            const response = await fetch('http://localhost:3000/users/' + user.value?.sub , {
+               method: 'GET',
+               headers: getHeaders.value
             });
             const data = await response.json();
-            if (data.status !== 200) {
-               console.error('Error: ', data);
-               return data.status;
-            }
-            user.value = data.data;
-            // token.value = data.token;
-            return 200;
-         } catch (error: any) {
-            console.error('Error: ', error);
-            return 500;
+            console.log(data);
+         } catch (error) {
+            
          }
       }
 
-      function Logout(): void {
-         user.value = {} as User;
-         // token.value = '';
+      async function Register() {
+         try {
+            loginWithRedirect({
+               appState: {
+                  target: '/profile'
+               },
+               authorizationParams: {
+                  screen_hint: 'signup'
+               }
+            });
+            const response = await fetch('http://localhost:3000/users/', {
+               method: 'POST',
+               headers: getHeaders.value,
+               body: JSON.stringify({
+                  auth0_id: user.value?.sub,
+                  username: user.value?.nickname,
+                  email: user.value?.email
+               })
+            });
+            const data = await response.json();
+            console.log(data);
+         }
+         catch (e) {
+            console.error(e);
+         }
       }
 
-      return { user, isAuthenticated, getHeaders, Login, Logout }
+      async function Logout() {
+         try {
+            logout({
+               logoutParams: {
+                  returnTo: window.location.origin
+               }
+            });
+         }
+         catch (e) {
+            console.error(e);
+         }
+      }
+
+      return { isLoggedIn, getUser, getHeaders, Login, Logout, Register }
    },
    {
       persist: true

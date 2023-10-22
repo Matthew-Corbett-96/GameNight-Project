@@ -11,121 +11,142 @@ def setup_routes(app: Flask, api: Api) -> None:
     class GameRestClass(Resource):
         def get(self, game_id = None) -> Response:
             if game_id is None:
-                games = Game.query.all()
                 games_dict = [
-                    game.to_dict() for game in games   
+                    game.to_dict() for game in Game.query.all()
                 ]
-                response: Response200 = Response200(data=games_dict)
-                return make_response(jsonify(response.to_dict()), 200)
+                response = Response200(data={"Games": games_dict}).to_dict()
+                return make_response(jsonify(response), 200)
 
             game: Game = Game.query.filter_by(id=game_id).first()
             if game is None:
-                return make_response(jsonify(Response404().to_dict()), 404)
+                return make_response(jsonify(Response404('Game Not Found').to_dict()), 404)
             
-            return make_response(jsonify(Response200(data=game.to_dict()).to_dict()), 200)
+            response = Response200(data={'Game': game.to_dict()}).to_dict()
+            return make_response(jsonify(response), 200)
 
         def post(self) -> Response:
             data = request.json
             game: Game = Game(
-                name=data["name"],
-                description=data["description"],
-                min_players=data["min_players"],
-                max_players=data["max_players"],
+                name=data.get("name"),
+                description=data.get("description"),
+                min_players=data.get("min_players"),
+                max_players=data.get("max_players"),
             )
             db.session.add(game)
             db.session.commit()
-            response = Response200(data=game.to_dict())
-            return make_response(jsonify(response.to_dict()), 200)
+            response = Response200(data=game.to_dict()).to_dict()
+            return make_response(jsonify(response), 200)
 
         def put(self, game_id) -> Response:
             data = request.json
             game: Game = Game.query.filter_by(id=game_id).first()
-            if game:
-                game.name = data["name"]
-                game.description = data["description"]
-                game.min_players = data["min_players"]
-                game.max_players = data["max_players"]
-                db.session.commit()
-                return make_response(jsonify(game.to_dict()), 200)
+            if game is None:
+                return make_response(jsonify(Response404('Game Not Found').to_dict()), 404)
             
-            return make_response(jsonify({"message": "Game not found."}), 404)
+            game.name = data.get("name", game.name)
+            game.description = data.get("description", game.description)
+            game.min_players = data.get("min_players", game.min_players)
+            game.max_players = data.get("max_players", game.max_players)
+            db.session.commit()
+
+            response = Response200(data={'Game': game.to_dict()}).to_dict()
+            return make_response(jsonify(response), 200)
 
         def delete(self, game_id) -> Response:
             game: Game = Game.query.filter_by(id=game_id).first()
-            if game:
-               db.session.delete(game)
-               db.session.commit()
-               return make_response(f'{game_id} Deleted', 200)
-            
-            return make_response(jsonify({"message": "Game not found."}), 404)
+            if game is None:
+                return make_response(jsonify(Response404('Game Not Found').to_dict()), 404)
 
+            db.session.delete(game)
+            db.session.commit()
+            return make_response(Response200(f'{game_id} Deleted').to_dict(), 200)
     # User model
     class UserRestClass(Resource):
         def get(self, user_id=None) -> Response:
             if user_id is None:
-                users = User.query.all()
-                users_dict = [user.to_dict() for user in users]
-                return make_response(jsonify(users_dict), 200)
+                users_dict: list[dict] = [user.to_dict() for user in User.query.all()]
+                response: dict = Response200(data={"Users": users_dict}).to_dict()
+                return make_response(jsonify(response), 200)
 
             user: User = User.query.filter_by(id=user_id).first()
-            if user:
-               return make_response(jsonify(user.to_dict()), 200)
+            if user is None:
+                return make_response(jsonify(Response404('User Not Found').to_dict()), 404)
             
-            return make_response(jsonify({"message": "User not found."}), 404)
-        
+            response = Response200(data={'User': user.to_dict()}).to_dict()
+            return make_response(jsonify(response), 200)
+            
         def post(self) -> Response:
             data = request.json
-            role_id = UserRole.query.filter_by(role_name=data["role"]).first().id
-            if role_id is None:
-                return make_response(jsonify({"message": "Role not found."}), 404)
-            
+
+            # Check if role exists so we can assign to user
+            role = None
+            if data.get("role", None) is not None:
+                role: UserRole | None = UserRole.query.filter_by(role_name=data["role"]).first()
+                if role is None:
+                    return make_response(jsonify(Response401(message="Role Id Not Found").to_dict()), 404)
+                
             user: User = User(
-                username=data["username"],
-                first_name=data["first_name"],
-                last_name=data["last_name"],
-                gender=data["gender"],
-                email=data["email"],
-                phone_number=data["phone_number"],
-                password=data["password"],
-                role_id= role_id,
-                is_active=data["is_active"]
+                auth0_id=data.get("auth0_id"),
+                username=data.get("username"),
+                first_name=data.get("first_name", None),
+                last_name=data.get("last_name", None),
+                gender=data.get("gender", None),
+                email=data.get("email"),
+                phone_number=data.get("phone_number", None),
+                role_id= role.id if role is not None else None,
+                is_active= data.get("is_active", True)
             )
             db.session.add(user)
             db.session.commit()
-            return make_response(jsonify(user.to_dict()), 200)
+            response: Response200 = Response200(
+                data= {
+                    "User": user.to_dict(),
+                }
+            )
+            return make_response(jsonify(response.to_dict()), 200)
         
         def put(self, user_id) -> Response:
             data = request.json
+
+            # Check if user exists
             user: User = User.query.filter_by(id=user_id).first()
             if user is None:
-                return make_response(jsonify({"message": "User not found."}), 404)
+                return make_response(jsonify(Response404('User Not Found').to_dict()), 404)
 
-            role_id = UserRole.query.filter_by(role_name=data["role"]).first().id
-            if role_id is None:
-                return make_response(jsonify({"message": "Role not found."}), 404)
-            user.username = data["username"]
-            user.first_name = data["first_name"]
-            user.last_name = data["last_name"]
-            user.gender = data["gender"]
-            user.email = data["email"]
-            user.phone_number = data["phone_number"]
-            user.password = data["password"]
-            user.role_id = role_id
-            user.is_active = data["is_active"]
-            db.session.commit()
-            return make_response(jsonify(user.to_dict()), 200)
+            # Check if role exists so we can assign to user
+            if data.get("role", None) is not None:
+                role: UserRole | None = UserRole.query.filter_by(role_name=data["role"]).first()
+                if role is None:
+                    return make_response(jsonify(Response400(message="Role Id Not Found").to_dict()), 400)
             
-        
+            user.username = data.get("username", user.username)
+            user.first_name = data.get("first_name", user.first_name)
+            user.last_name = data.get("last_name", user.last_name)
+            user.gender = data.get("gender", user.gender)
+            user.email = data.get("email", user.email)
+            user.phone_number = data.get("phone_number", user.phone_number)
+            user.role_id = role.id
+            user.is_active = data.get("is_active", user.is_active)
+
+
+            db.session.commit()
+            response: Response200 = Response200(
+                data= {
+                    "User": user.to_dict(),
+                }
+            ).to_dict()
+            return make_response(jsonify(response), 200)
+                
         def delete(self, user_id) -> Response:
             user: User = User.query.filter_by(id=user_id).first()
-            if user:
-                db.session.delete(user)
-                db.session.commit()
-                return make_response(f'{user_id} Deleted', 200)
+            if user is None:
+                return make_response(jsonify(Response404.to_dict()), 404)
             
-            return make_response(jsonify({"message": "User not found."}), 404)
+            db.session.delete(user)
+            db.session.commit()
+            return make_response(jsonify(Response200(message=f'{user_id} Deleted.')), 200)
 
-    # GameNight model
+    # GameNight model START HERE MATTHEW JAMES 10/10/2021
     class GameNightRestClass(Resource):
         def get(self, game_night_id=None) -> Response:
             if game_night_id is None:
@@ -139,7 +160,6 @@ def setup_routes(app: Flask, api: Api) -> None:
                 
             return make_response(jsonify(game_night.to_dict()), 200)
             
-        
         def post(self) -> Response:
             data = request.json
             game_night: GameNight = GameNight(
@@ -158,8 +178,7 @@ def setup_routes(app: Flask, api: Api) -> None:
             
             game_night.date = data["date"]
             db.session.commit()
-            return make_response(jsonify(game_night.to_dict()), 200)
-            
+            return make_response(jsonify(game_night.to_dict()), 200)      
         
         def delete(self, game_night_id) -> Response:
             game_night: GameNight = GameNight.query.filter_by(id=game_night_id).first()
@@ -172,7 +191,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             
     # Round model
     class RoundRestClass(Resource):
-        
         def get(self, round_id=None) -> Response:
             if round_id is None:
                 rounds = Round.query.all()
@@ -185,7 +203,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             
             return make_response(jsonify(round.to_dict()), 200)
             
-        
         def post(self) -> Response:
             data = request.json
 
@@ -217,7 +234,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             db.session.commit()
             return make_response(jsonify(round.to_dict()), 200)
             
-        
         def delete(self, round_id) -> Response:
             round: Round = Round.query.filter_by(id=round_id).first()
             if round is None:
@@ -292,7 +308,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             return make_response(jsonify({"message": "Not found."}), 404)
 
     class NotificationRestClass(Resource):
-
         def get(self, notification_id=None) -> Response:
             if notification_id is None:
                 notifications = Notification.query.all()
@@ -333,7 +348,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             db.session.commit()
             return make_response(jsonify(notification.to_dict()), 200)
             
-    
         def delete(self, notification_id) -> Response:
 
             notification: Notification = Notification.query.filter_by(id=notification_id).first()
@@ -356,8 +370,7 @@ def setup_routes(app: Flask, api: Api) -> None:
                 return make_response(jsonify({"message": "Role not found."}), 404)
             
             return make_response(jsonify(role.to_dict()), 200)
-            
-        
+             
         def post(self) -> Response:
             data = request.json
             role: UserRole = UserRole(
@@ -378,8 +391,7 @@ def setup_routes(app: Flask, api: Api) -> None:
             role.role_name = data["role"]
             role.permissions = data["permissions"]
             db.session.commit()
-            return make_response(jsonify(role.to_dict()), 200)
-            
+            return make_response(jsonify(role.to_dict()), 200)       
         
         def delete(self, role_id) -> Response:
             role: UserRole = UserRole.query.filter_by(id=role_id).first()
@@ -390,24 +402,6 @@ def setup_routes(app: Flask, api: Api) -> None:
             db.session.commit()
             return make_response(f'{role_id} Deleted', 200)
             
-    class LoginRestClass(Resource):
-        def post(self) -> Response:
-            data = request.json
-            user: User = User.query.filter_by(email=data["email"]).first()
-            if user is None:
-                return make_response(jsonify(Response404().to_dict()), 404)
-            
-            if user.password != data["password"]:
-                return make_response(jsonify(Response401().to_dict()), 401)
-            
-            response: Response200 = Response200(data=user.to_dict())
-            return make_response(jsonify(response.to_dict()), 200)
-        
-
-
-
-
-
 
     # Add resources to api
     api.add_resource(GameRestClass, 
@@ -436,36 +430,28 @@ def setup_routes(app: Flask, api: Api) -> None:
                     "/notifications/",
                     "/notifications/<uuid:notification_id>"
                     )
-
     api.add_resource(UserRoleRestClass,
                     "/roles/",
                     "/roles/<uuid:role_id>"
                     )
-    
-    api.add_resource(LoginRestClass,
-                    "/login/"
-                    )
-    
+
     # Healthcheck
     @app.route("/healthcheck", methods=["GET"])
     def heathcheck() -> Response:
-        return make_response(jsonify({"message": "OK"}), 200)
+        return make_response(jsonify(Response200.to_dict()), 200)
     
     # 404
     @app.errorhandler(404)
     def not_found(error) -> Response:
-        return make_response(jsonify({"error": "Path Not found"}), 404)
+        return make_response(jsonify(Response404('Path Not Found').to_dict()), 404)
     
     # 500
     @app.errorhandler(500)
     def internal_server_error(error) -> Response:
-        return make_response(jsonify({"error": "Internal server error"}), 500)
+        return make_response(jsonify(Response500.to_dict()), 500)
     
     # 400
     @app.errorhandler(400)
     def bad_request(error) -> Response:
-        return make_response(jsonify({"error": "Bad request"}), 400)
+        return make_response(jsonify(Response400.to_dict()), 400)
     
-    # -------------------------------------------------------------------------------- #
-    # -------------------------------------------------------------------------------- #
-    # -------------------------------------------------------------------------------- #
