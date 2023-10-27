@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
-import { computed, type Ref} from "vue";
+import { computed, type Ref, ref } from "vue";
 import { useAuth0 } from '@auth0/auth0-vue';
-import type { User } from '@auth0/auth0-spa-js';
+import { type User} from '@auth0/auth0-spa-js';
+import type { AppUser } from "@/main";
 
 export const useAuthStore = defineStore(
-
    'auth',
-
    () => {
 
       const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+      const current_user: Ref<AppUser> = ref({} as AppUser);
 
       const getHeaders = computed(() => {
          let headers = new Headers();
@@ -20,12 +20,20 @@ export const useAuthStore = defineStore(
          return headers;
       });
 
-      const getUser = computed(() => {
-        if (typeof user.value !== 'undefined') {
-           return user.value;
-        } else {
-           return {} as User;
-        }
+      const getAuthProfile = computed(() => {
+         if (typeof user.value !== 'undefined') {
+            return user.value;
+         } else {
+            return {} as User;
+         }
+      });
+
+      const getCurrentUser = computed(() => {
+         if (typeof current_user.value !== 'undefined') {
+            return current_user.value;
+         } else {
+            return {} as AppUser;
+         }
       });
 
       const isLoggedIn = computed(() => {
@@ -34,7 +42,7 @@ export const useAuthStore = defineStore(
 
       async function Login() {
          try {
-            loginWithRedirect({
+            await loginWithRedirect({
                appState: {
                   target: '/profile'
                }
@@ -43,22 +51,11 @@ export const useAuthStore = defineStore(
          catch (e) {
             console.error(e);
          }
-
-         try {
-            const response = await fetch('http://localhost:3000/users/' + user.value?.sub , {
-               method: 'GET',
-               headers: getHeaders.value
-            });
-            const data = await response.json();
-            console.log(data);
-         } catch (error) {
-            
-         }
       }
 
       async function Register() {
          try {
-            loginWithRedirect({
+            await loginWithRedirect({
                appState: {
                   target: '/profile'
                },
@@ -66,17 +63,6 @@ export const useAuthStore = defineStore(
                   screen_hint: 'signup'
                }
             });
-            const response = await fetch('http://localhost:3000/users/', {
-               method: 'POST',
-               headers: getHeaders.value,
-               body: JSON.stringify({
-                  auth0_id: user.value?.sub,
-                  username: user.value?.nickname,
-                  email: user.value?.email
-               })
-            });
-            const data = await response.json();
-            console.log(data);
          }
          catch (e) {
             console.error(e);
@@ -85,18 +71,39 @@ export const useAuthStore = defineStore(
 
       async function Logout() {
          try {
-            logout({
+            await logout({
                logoutParams: {
                   returnTo: window.location.origin
                }
             });
+            clearUser();
          }
          catch (e) {
             console.error(e);
          }
       }
 
-      return { isLoggedIn, getUser, getHeaders, Login, Logout, Register }
+   async function updateCurrentUser(): Promise<void> {
+      if ( typeof getCurrentUser.value.username === 'undefined' ) {
+         try {
+            const response = await fetch('http://localhost:5000/auth0/users/' + getAuthProfile.value.sub, {
+               method: 'GET',
+               headers: getHeaders.value,
+               mode: 'cors',
+            });
+            const data = await response.json();
+            current_user.value = data.data.user as AppUser;
+         } catch (e) {
+            console.error('Somthing Went Wrong:', e);
+         }
+      }
+   }
+
+   function clearUser(): void {
+      current_user.value = {} as AppUser;
+   }
+
+      return { isLoggedIn, getAuthProfile, getHeaders, updateCurrentUser, Login, Logout, Register, getCurrentUser }
    },
    {
       persist: true

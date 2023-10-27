@@ -139,7 +139,7 @@ class RSVPLog(db.Model, MixinBase):
     game_night_id = db.Column(UUID(as_uuid=True), db.ForeignKey("game_nights.id"), nullable=False)
     game_night = db.relationship("GameNight", backref="rsvp_logs")
     response_date = db.Column(db.DateTime, server_default=func.now())
-    response_status = db.Column(db.String(20)) # response_status can be attending, not attending, or maybe
+    response_status = db.Column(db.String(20)) # response_status can be YES, NO, or MAYBE
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()

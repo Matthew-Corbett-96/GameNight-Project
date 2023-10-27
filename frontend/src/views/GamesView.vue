@@ -46,7 +46,7 @@ function fetchGames(): void {
       if (data.status === 200) {
         console.log('Games fetched successfully.');
         console.log(data);
-        games.value = data.data;
+        games.value = data.data.games;
       } else {
         console.log(data);
       }
