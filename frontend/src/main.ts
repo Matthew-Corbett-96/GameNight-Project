@@ -1,13 +1,16 @@
-import './assets/main.css'
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import { createPinia } from 'pinia'
-import { createPersistedState } from 'pinia-plugin-persistedstate'
-import { createAuth0 } from '@auth0/auth0-vue'
-import { User } from '@auth0/auth0-spa-js'
+import './assets/main.css';
+import "vue-toastification/dist/index.css";
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import { createPinia } from 'pinia';
+import { createPersistedState } from 'pinia-plugin-persistedstate';
+import { createAuth0 } from '@auth0/auth0-vue';
+import { User } from '@auth0/auth0-spa-js';
+import { type PluginOptions } from 'vue-toastification';
+import toast from 'vue-toastification';
 
-const pinia = createPinia().use(createPersistedState())
+const pinia = createPinia().use(createPersistedState());
 
 const auth0 = createAuth0({
   domain: import.meta.env.VITE_AUTH0_DOMAIN,
@@ -17,18 +20,29 @@ const auth0 = createAuth0({
   }
 });
 
-const app = createApp(App).use(router).use(pinia).use(auth0);
+const toastOptions: PluginOptions = {
+  timeout: 5000
+};
 
-app.mount('#app')
 
-export interface APIResponse {
-  status: number
+const app = createApp(App).use(router).use(pinia).use(auth0).use(toast, toastOptions);
+
+app.mount('#app');
+
+export type SuccessAPIResponse = {
+  status: 200 | 201
   message: string
   data: any
 }
 
-export interface AuthProfile extends User {
+export type  ErrorAPIResponse = {
+  status: 400 | 401 | 403 | 404 | 500
+  message: string
 }
+
+export type APIResponse = SuccessAPIResponse | ErrorAPIResponse;
+
+export interface AuthProfile extends User {}
 
 export interface AppUser {
   id: string

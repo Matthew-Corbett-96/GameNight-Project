@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import Button from '@/components/core/Button.vue';
 import PopupForm from '@/components/core/PopupForm.vue';
 import { onMounted } from 'vue';
 import { type FormData, type FormField, type Game, type GameFormData } from '@/main';
 import GameCard from '@/components/core/GameCard.vue';
+import {useGameStore} from '@/store/games';
+import { useToast } from 'vue-toastification';
 
+const gameStore = useGameStore();
+const toast = useToast();
 // Array of games
-const games: Ref<Game[]> = ref([]);
+const games: Ref<Game[]> = ref(gameStore.getGames);
+
+// add watcher to games 
+watch(() => gameStore.getGames, (newVal, oldVal) => {
+  games.value = newVal;
+});
 
 // Toggles for showing/hiding the create and update game forms
 const showCreateGameForm: Ref<boolean> = ref(false);
@@ -35,62 +44,15 @@ const error_message: Ref<string> = ref('');
 
 // Fetch games from the backend when the component is mounted
 onMounted(() => {
-  fetchGames();
+  gameStore.fetchGames();
 });
 
-// Functions for fetching games from the backend
-function fetchGames(): void {
-  fetch('http://localhost:5000/games/')
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 200) {
-        console.log('Games fetched successfully.');
-        console.log(data);
-        games.value = data.data.games;
-      } else {
-        console.log(data);
-      }
-    })
-    .catch(error => {
-      console.log('Error:', error);
-    });
-}
 // Functions for toggling the create and update game forms
 function toggleCreateGameForm() {
   showCreateGameForm.value = !showCreateGameForm.value;
 }
 function toggleUpdateGameForm() {
   showUpdateGameForm.value = !showUpdateGameForm.value;
-}
-
-// Function for deleting a game
-function deleteGame(game: Game) {
-  let headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  headers.append('Accept', 'application/json');
-  headers.append('Origin', 'http://localhost:3000');
-
-  fetch('http://localhost:5000/games/' + game.id, {
-    method: 'DELETE',
-    mode: 'cors',
-    headers: headers
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 200) {
-        console.log(data);
-      } else {
-        error_message.value = data.message;
-        error.value = true;
-      }
-    })
-    .catch(error => {
-      error_message.value = error.message;
-      error.value = true;
-    })
-    .finally(() => {
-      fetchGames();
-    });
 }
 
 // Function for opening the update game form
@@ -104,89 +66,24 @@ function openUpdateForm(game: Game) {
   toggleUpdateGameForm();
 }
 
+// Function for deleting a game
+function deleteGame(game: Game) {
+  gameStore.deleteGame(game);
+  gameStore.fetchGames();
+}
+
 // Functions for submitting the create and update game forms
 function createGame(formData: GameFormData) {
-
-  let headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  headers.append('Accept', 'application/json');
-  headers.append('Origin', 'http://localhost:3000');
-
-  fetch('http://localhost:5000/games/', {
-    method: 'POST',
-    mode: 'cors',
-    headers: headers,
-    body: JSON.stringify({
-      name: formData['name'],
-      description: formData['description'],
-      min_players: formData['min_players'],
-      max_players: formData['max_players']
-    })
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 200) {
-        console.log('Game created successfully.');
-        console.log(data);
-      } else {
-        console.log(data);
-      }
-    })
-    .catch(error => {
-      console.log('Error:', error);
-    })
-    .finally(() => {
-      toggleCreateGameForm();
-      fetchGames();
-    });
+  toggleCreateGameForm();
+  gameStore.createGame(formData);
+  gameStore.fetchGames();
 }
 
 // Function for submitting the update game form
 function updateGame(formData: GameFormData) {
-
-  let headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  headers.append('Accept', 'application/json');
-  headers.append('Origin', 'http://localhost:3000');
-
-  let id = games.value.find(game => game.name === gameformdata.value.name)?.id;
-
-  if (id === undefined) {
-    console.log('Error: Game not found.');
-    error_message.value = 'Error: Game not found.';
-    error.value = true;
-    return;
-  }
-
-  fetch('http://localhost:5000/games/' + id, {
-    method: 'PUT',
-    mode: 'cors',
-    headers: headers,
-    body: JSON.stringify({
-      name: formData['name'],
-      description: formData['description'],
-      min_players: formData['min_players'],
-      max_players: formData['max_players']
-    })
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 200) {
-        console.log(data);
-      } else {
-        console.log(data);
-        error_message.value = data.message;
-        error.value = true;
-      }
-    })
-    .catch(error => {
-      error_message.value = error.message;
-      error.value = true;
-    })
-    .finally(() => {
-      toggleUpdateGameForm();
-      fetchGames();
-    });
+  toggleUpdateGameForm();
+  gameStore.updateGame(formData);
+  gameStore.fetchGames();
 }
 
 </script>
