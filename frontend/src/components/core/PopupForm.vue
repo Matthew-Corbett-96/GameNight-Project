@@ -68,7 +68,7 @@ function cancel() {
                   </div>
                </div>
                <div class="footer">
-                  <Button text="Submit" @clicked="submit" />
+                  <Button text="Submit" @clicked="submitForm" />
                   <Button text="Cancel" @clicked="cancel" />
                </div>
             </form>

@@ -4,7 +4,6 @@ import { useToast } from 'vue-toastification'
 import { computed, type Ref, ref } from "vue";
 import { useAuthStore } from '@/store/auth';
 import type { APIResponse, AppUser, ErrorAPIResponse, Game, GameFormData } from "@/main";
-import { totalmem } from 'os';
 
 export const useGameStore = defineStore(
    'games',

@@ -1,14 +1,22 @@
 import './assets/main.css';
-import "vue-toastification/dist/index.css";
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+// Pinia
 import { createPinia } from 'pinia';
 import { createPersistedState } from 'pinia-plugin-persistedstate';
+// Auth0
 import { createAuth0 } from '@auth0/auth0-vue';
 import { User } from '@auth0/auth0-spa-js';
+// Toastification
 import { type PluginOptions } from 'vue-toastification';
+import "vue-toastification/dist/index.css";
 import toast from 'vue-toastification';
+// Vuetify
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 
 const pinia = createPinia().use(createPersistedState());
 
@@ -24,10 +32,18 @@ const toastOptions: PluginOptions = {
   timeout: 5000
 };
 
+const vuetify = createVuetify({
+  components,
+  directives
+});
 
-const app = createApp(App).use(router).use(pinia).use(auth0).use(toast, toastOptions);
-
-app.mount('#app');
+const app = createApp(App)
+  .use(router)
+  .use(pinia)
+  .use(auth0)
+  .use(toast, toastOptions)
+  .use(vuetify)
+  .mount('#app');
 
 export type SuccessAPIResponse = {
   status: 200 | 201

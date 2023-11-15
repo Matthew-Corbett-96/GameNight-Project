@@ -14,9 +14,9 @@ const emit = defineEmits(['clicked']);
 
 </script>
 
-<template>
+<template >
    <div class="button-container">
-      <button class="button" @click="emit('clicked')"> {{ text }} </button>
+      <v-btn color="primary" @click="emit('clicked')"> {{ text }} </v-btn>
    </div>
 </template>
 
@@ -26,21 +26,6 @@ const emit = defineEmits(['clicked']);
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.button {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.25rem;
-  background-color: #0077cc;
-  color: #fff;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-.button:hover {
-  background-color: #005fa3;
 }
 
 </style>
