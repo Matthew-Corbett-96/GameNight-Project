@@ -1,9 +1,13 @@
 <script setup lang="ts" emits="clicked">
-import { defineProps } from 'vue';
 
 // get value from parent component
 const props = defineProps({
   text: {
+    type: String,
+    default: '',
+    required: false
+  },
+  to: {
     type: String,
     default: '',
     required: false
@@ -16,7 +20,7 @@ const emit = defineEmits(['clicked']);
 
 <template >
    <div class="button-container">
-      <v-btn color="primary" @click="emit('clicked')"> {{ text }} </v-btn>
+      <v-btn color="secondary" @click="emit('clicked')" :to="to"> {{ text }} </v-btn>
    </div>
 </template>
 

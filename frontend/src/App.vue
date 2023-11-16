@@ -2,25 +2,29 @@
 import TopBar from './components/nav/TopBar.vue';
 import { RouterView } from 'vue-router';
 import CustomFooter from './components/CustomFooter.vue';
-import { useAuthStore } from './store/auth';
-
-const authStore = useAuthStore();
 
 </script>
 
 <template>
-  <div class="page-container">
-    <TopBar v-if="authStore.isLoggedIn" />
-    <main>
-      <RouterView />
-    </main>
-    <CustomFooter v-if="authStore.isLoggedIn" />
-  </div>
+
+  <v-app>
+
+    <v-app-bar scroll-behavior="elevate">
+      <TopBar />
+    </v-app-bar>
+
+    <v-main>
+        <RouterView />
+    </v-main>
+
+    <v-footer>
+      <CustomFooter />
+    </v-footer>
+
+  </v-app>
+
 </template>
 
 <style scoped>
-.page-container {
-  display: grid;
-  grid-template-rows: 1fr 10fr 1fr;
-}
+
 </style>

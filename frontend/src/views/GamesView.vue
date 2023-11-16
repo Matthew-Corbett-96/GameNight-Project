@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import type { Ref } from 'vue';
+import { ref, watch, onMounted, type Ref } from 'vue';
 import Button from '@/components/core/Button.vue';
 import PopupForm from '@/components/core/PopupForm.vue';
-import { onMounted } from 'vue';
-import { type FormData, type FormField, type Game, type GameFormData } from '@/main';
 import GameCard from '@/components/core/GameCard.vue';
-import {useGameStore} from '@/store/games';
-import { useToast } from 'vue-toastification';
+import { type FormField, type Game, type GameFormData } from '@/main';
+import { useGameStore } from '@/store/games';
 
 const gameStore = useGameStore();
-const toast = useToast();
 // Array of games
 const games: Ref<Game[]> = ref(gameStore.getGames);
 
@@ -38,9 +34,6 @@ const gameformdata: Ref<GameFormData> = ref({
   min_players: 0,
   max_players: 0
 });
-
-const error: Ref<boolean> = ref(false);
-const error_message: Ref<string> = ref('');
 
 // Fetch games from the backend when the component is mounted
 onMounted(() => {
@@ -89,13 +82,12 @@ function updateGame(formData: GameFormData) {
 </script>
 
 <template>
-
-  <h1>
+  <h1 class="text-h2 text-center">
     Games
   </h1>
 
   <section>
-    <Button @clicked="toggleCreateGameForm" :text="'Create Game'" />
+    <v-btn @click="toggleCreateGameForm" text="Create Game" block />
   </section>
 
   <section class="display-games-container">
@@ -105,21 +97,17 @@ function updateGame(formData: GameFormData) {
   </section>
 
   <section class="popup-container">
-    <PopupForm @submit="createGame" @cancel="toggleCreateGameForm" :show="showCreateGameForm"
-      :title="'Create Game'" :form-fields="gameformfields">
+    <PopupForm @submit="createGame" @cancel="toggleCreateGameForm" :show="showCreateGameForm" :title="'Create Game'"
+      :form-fields="gameformfields">
     </PopupForm>
 
-    <PopupForm @submit="updateGame" @cancel="toggleUpdateGameForm" :show="showUpdateGameForm"
-      :title="'Update Game'" :form-fields="gameformfields" :form-data="gameformdata">
+    <PopupForm @submit="updateGame" @cancel="toggleUpdateGameForm" :show="showUpdateGameForm" :title="'Update Game'"
+      :form-fields="gameformfields" :form-data="gameformdata">
     </PopupForm>
   </section>
-
 </template>
 
 <style scoped>
-h1 {
-  text-align: center;
-}
 
 .display-games-container {
   display: grid;
@@ -128,5 +116,4 @@ h1 {
   margin: 1rem;
   background-color: rgb(180, 181, 181);
 }
-
 </style>

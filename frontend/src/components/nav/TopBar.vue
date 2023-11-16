@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import Navigation from '@/components/nav/Navigation.vue';
-import SettingNav from '@/components/nav/SettingsNav.vue';
+import { useAuthStore } from '@/store/auth';
+
+const authStore = useAuthStore();
+
+function login() {
+   authStore.Login();
+}
+
+function logout() {
+   authStore.Logout();
+}
+
+function register() {
+   authStore.Register();
+}
 
 </script>
 
 <template>
-   <header>
-      <div class="wrapper">
-         <Navigation />
-         <SettingNav/>
-      </div>
-   </header>
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-toolbar-title>Game Night</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn variant="text" v-if="authStore.isLoggedIn" to="/games">Games</v-btn>
+      <v-btn variant="text" v-if="authStore.isLoggedIn" to="/profile">Profile</v-btn>
+      <v-btn variant="text" v-if="authStore.isLoggedIn" @click="logout">Logout</v-btn>
+      <v-btn variant="text" v-if="!authStore.isLoggedIn" @click="login">Login</v-btn>
+      <v-btn variant="text" v-if="!authStore.isLoggedIn" @click="register">Register</v-btn>
+      <v-btn variant="text" v-if="authStore.isLoggedIn" to="/about">About</v-btn>
 </template>
-
-<style scoped>
-.wrapper {
-   max-width: 100vw;
-   margin: 0 auto 1rem auto;
-   padding: 0;
-   display: grid;
-   grid-template-columns: 10fr 1fr;
-}
-
-</style>
