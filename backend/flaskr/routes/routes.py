@@ -22,6 +22,7 @@ def setup_routes(app: Flask, api: Api) -> None:
 
         def post(self) -> Response:
             data = request.json
+            print(data)
 
             # Check if game name is already taken
             if Game.query.filter_by(name=data["name"]).first() is not None:
