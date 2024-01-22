@@ -59,79 +59,88 @@ function updateGame(formData: GameFormData) {
 </script>
 
 <template>
-  <h1 class="text-h2 text-center">
-    Games
-  </h1>
+  <h1 class="text-h2 text-center"> Games </h1>
+
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent width="1024">
+    <v-dialog v-model="dialog" persistent width="1024" transition="dialog-bottom-transition">
+
       <template v-slot:activator="{ props }">
         <v-btn color="primary" v-bind="props"> Create Game </v-btn>
       </template>
+
       <v-card>
         <v-card-title>
           <span class="text-h5">Create Game</span>
         </v-card-title>
+
         <v-card-text>
           <v-container>
+
+            <!-- Row 1 -->
             <v-row>
               <!-- <form @submit.prevent="createGame"> -->
               <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                v-model="gameformdata.name"
-                  label="Name"
-                  hint="example of helper text only on focus"
-                ></v-text-field> 
-                
+                <v-text-field 
+                v-model="gameformdata.name" 
+                label="Name"
+                hint="example of helper text only on focus"
+                />
               </v-col>
-              <v-col cols="12" sm="6" md="4" >
-                <v-text-field
-                v-model="gameformdata.description"
-                  label="Discription"
-                  hint="Be creative"
-                  persistent-hint
-                  required
-                ></v-text-field>
+
+              <v-col cols="12" sm="6" md="4">
+                <v-text-field 
+                v-model="gameformdata.description" 
+                label="Discription" 
+                hint="Be creative" 
+                persistent-hint
+                required
+                />
               </v-col>
             </v-row>
+
+            <!-- Row 2 -->
             <v-row>
-              <v-col cols="12" sm="6"  md="4">
-                <v-select
-                v-model="gameformdata.min_players"
-                  :items="[1, 2, 3, 4,5]"
-                  label="min_players"
-                  required
-                ></v-select>
+              <v-col cols="12" sm="6" md="4">
+                <v-select 
+                v-model="gameformdata.min_players" 
+                :items="[1, 2, 3, 4, 5]" 
+                label="min_players"
+                required
+                />
               </v-col>
-              <v-col cols="12" sm="6"  md="4">
-                <v-select
-                v-model="gameformdata.max_players"
-                  :items="[1, 2, 3, 4,5]"
-                  label="max_players"
-                  required
-                ></v-select>
+
+              <v-col cols="12" sm="6" md="4">
+                <v-select 
+                v-model="gameformdata.max_players" 
+                :items="[1, 2, 3, 4, 5]" 
+                label="max_players"
+                required
+                />
               </v-col>
             </v-row>
             <!-- </form> -->
-            
+
           </v-container>
+
           <small>*indicates required field</small>
-          </v-card-text>
+        </v-card-text>
+
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
             Close
           </v-btn>
-          <v-btn color="blue-darken-1"  variant="text" @click="createGame">
+          <v-btn color="blue-darken-1" variant="text" @click="createGame">
             Submit
           </v-btn>
         </v-card-actions>
+
       </v-card>
     </v-dialog>
   </v-row>
 </template>
 
 <style scoped>
-
 .display-games-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -140,7 +149,7 @@ function updateGame(formData: GameFormData) {
   background-color: rgb(180, 181, 181);
 }
 
-.v-row{
+.v-row {
   justify-content: center;
 }
 </style>
