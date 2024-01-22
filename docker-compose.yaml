@@ -28,8 +28,8 @@ services:
       - VITE_AUTH0_CALLBACK_URL=http://localhost:3000/callback
       - VITE_API_SERVER_URL=http://localhost:5000
 
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
   
   backend:
     container_name: backend
@@ -45,28 +45,29 @@ services:
       - FLASK_ENV=development
       - FLASK_RUN_HOST=0.0.0.0
       - JWT_SECRET_KEY=SuperSecret
-      - DATABASE_URL=postgresql://postgres:postgrespw@db:5432/postgres
+      # - DATABASE_URL=postgresql://postgres:postgrespw@db:5432/postgres
+      # - DATABASE_URL=postgresql://postgres:postgrespw@test-gamenight-db.c9wkwugm84s6.us-east-2.rds.amazonaws.com:5432/test-gamenight-db
       - CLIENT_ORIGIN_URL=http://localhost:3000
       - AUTH0_AUDIENCE=Flask-Backend-API
       - AUTH0_DOMAIN=dev-4tze8y46hhx3kohe.us.auth0.com
     networks:
       - main
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
 
-  db:
-    container_name: database
-    image: postgres:latest
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=postgrespw
-    networks:
-      - main
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # db:
+  #   container_name: database
+  #   image: postgres:latest
+  #   environment:
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_USERNAME=postgres
+  #     - POSTGRES_PASSWORD=postgrespw
+  #   networks:
+  #     - main
+  #   ports:
+  #     - 5432:5432
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
 
   pgadmin:
     container_name: pgadmin
@@ -82,7 +83,7 @@ services:
     volumes:
       - ./pgadmin_data:/var/lib/pgadmin  # Persist PgAdmin data
     user: "5050:5050"
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
 
   
