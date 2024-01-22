@@ -59,6 +59,7 @@ export const useGameStore = defineStore(
    //Create game
    async function createGame(formData: GameFormData) {
     
+      console.log(formData)
       try {
          let response = await fetch('http://localhost:5000/games/', {
            method: 'POST',

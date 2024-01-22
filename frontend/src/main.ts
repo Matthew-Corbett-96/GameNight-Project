@@ -143,11 +143,14 @@ export interface FormData {
   [key: string]: any
 }
 
-export interface GameFormData extends FormData {
+export interface GameFormData extends Game {
+  id?: string
   name: string
   description: string
   min_players: number
   max_players: number
+  created_on?: string
+  updated_on?: string
 }
 
 export interface RoundFormData extends FormData {
