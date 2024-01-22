@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { computed, type Ref, ref } from "vue";
 import { useAuth0 } from '@auth0/auth0-vue';
 import { type User} from '@auth0/auth0-spa-js';
-import type { AppUser } from "@/main";
+import type { AppUser } from "../main";
 
 export const useAuthStore = defineStore(
    'auth',

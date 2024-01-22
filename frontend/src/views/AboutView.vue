@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { Ref } from 'vue';
-import Button from '@/components/core/Button.vue';
-import router from '@/router';
-import { useAuthStore } from '@/store/auth';
+import Button from '../components/core/Button.vue';
+import router from '../router';
+import { useAuthStore } from '../store/auth';
 
 const authStore = useAuthStore();
 

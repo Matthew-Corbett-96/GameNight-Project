@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, type Ref } from 'vue';
-import { type Game, type GameFormData } from '@/main';
-import { useGameStore } from '@/store/games';
+import { type Game, type GameFormData } from '../main';
+import { useGameStore } from '../store/games';
 
 const dialog = ref(false);
 const gameStore = useGameStore();
