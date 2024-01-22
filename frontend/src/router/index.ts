@@ -7,23 +7,23 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: () => import('@/views/LoginView.vue')
+      component: () => import('../views/LoginView.vue')
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginView.vue')
+      component: () => import('../views/LoginView.vue')
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('@/views/DashboardView.vue'),
+      component: () => import('../views/DashboardView.vue'),
       beforeEnter: authGuard
     },
     {
       path: '/about',
       name: 'about',
-      component: () => import('@/views/AboutView.vue')
+      component: () => import('../views/AboutView.vue')
     },
     {
       path: '/profile',

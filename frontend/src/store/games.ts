@@ -2,8 +2,8 @@
 import { defineStore } from 'pinia'
 import { useToast } from 'vue-toastification'
 import { computed, type Ref, ref } from "vue";
-import { useAuthStore } from '@/store/auth';
-import type { APIResponse, AppUser, ErrorAPIResponse, Game, GameFormData } from "@/main";
+import { useAuthStore } from './auth';
+import type { APIResponse, AppUser, ErrorAPIResponse, Game, GameFormData } from "../main";
 
 export const useGameStore = defineStore(
    'games',
