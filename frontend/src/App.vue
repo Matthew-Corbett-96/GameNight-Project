@@ -15,7 +15,6 @@ const authStore = useAuthStore();
 </script>
 
 <template>
-  
   <v-app>
 
     <v-app-bar scroll-behavior="elevate">
@@ -28,7 +27,7 @@ const authStore = useAuthStore();
       <v-btn variant="text" v-if="authStore.isLoggedIn" @click="authStore.Logout">Logout</v-btn>
       <v-btn variant="text" v-if="!authStore.isLoggedIn" @click="authStore.Login">Login</v-btn>
       <v-btn variant="text" v-if="!authStore.isLoggedIn" @click="authStore.Register">Register</v-btn>
-      
+
     </v-app-bar>
 
     <v-main>
