@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth';
-import { useAuthStore } from '@/store/auth';
 import { RouterView } from 'vue-router';
 
 const links = [
@@ -12,17 +11,6 @@ const links = [
 ]
 
 const authStore = useAuthStore();
-
-const links = [
-  'About Us',
-  'Contact Us',
-  'Legal',
-  'Privacy Policy',
-  'Terms of Use'
-]
-
-const authStore = useAuthStore();
-
 </script>
 
 <template>
@@ -43,18 +31,8 @@ const authStore = useAuthStore();
 
     <v-main>
       <RouterView />
-      <RouterView />
     </v-main>
 
-    <v-footer class="bg-grey-lighten-1">
-      <v-row justify="center" no-gutters>
-        <v-btn v-for="link in links" :key="link" color="primary" variant="text" class="mx-2" rounded="xl">
-          {{ link }}
-        </v-btn>
-        <v-col class="text-center mt-4" cols="12" md="8" sm="4">
-          {{ new Date().getFullYear() }} — <strong>White Fence Gang LLC</strong>
-        </v-col>
-      </v-row>
     <v-footer class="bg-grey-lighten-1">
       <v-row justify="center" no-gutters>
         <v-btn v-for="link in links" :key="link" color="primary" variant="text" class="mx-2" rounded="xl">
@@ -69,5 +47,4 @@ const authStore = useAuthStore();
   </v-app>
 </template>
 
-<style scoped></style>
 <style scoped></style>
