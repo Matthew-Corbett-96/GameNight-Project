@@ -32,13 +32,6 @@ const authStore = useAuthStore();
     </v-app-bar>
 
     <v-main>
-      <!-- Testing -->
-      <!-- <v-img
-    width="300"
-  aspect-ratio="16/9"
-  cover
-  src="./src/assets/boardgameImg.jpg"
-></v-img> -->
       <RouterView />
     </v-main>
 
