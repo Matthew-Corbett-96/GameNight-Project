@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@auth0/auth0-vue": "^2.3.1",
+    "@vueuse/core": "^10.7.2",
     "axios": "^1.5.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
+    "@tailwindcss/typography": "^0.5.10",
     "@tsconfig/node18": "^2.0.1",
     "@types/jsdom": "^21.1.1",
     "@types/node": "^18.19.8",
