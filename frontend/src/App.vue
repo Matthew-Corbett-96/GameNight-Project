@@ -18,7 +18,7 @@ const authStore = useAuthStore();
   <v-app>
 
     <v-app-bar scroll-behavior="elevate">
-      <Avatar>
+      <Avatar class="ml-4">
     <AvatarImage src="src\assets\logoo.jpg" alt="@radix-vue" />
     <AvatarFallback>CN</AvatarFallback>
   </Avatar>

@@ -40,10 +40,10 @@ const logUser = () => console.log(current_user.value);
     <CardHeader>
       <CardTitle>Welcome Matthew{{current_user.username}}!</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="shadow-2xl">
 
-      <Tabs default-value="account">
-    <TabsList class="grid w-full grid-cols-2">
+      <Tabs default-value="account" class=" ">
+    <TabsList class="grid w-auto grid-cols-2">
       <TabsTrigger value="account">
         Account
       </TabsTrigger>
@@ -51,37 +51,44 @@ const logUser = () => console.log(current_user.value);
         Password
       </TabsTrigger>
     </TabsList>
-    <TabsContent value="account">
+    <TabsContent value="account" class="">
       <Card>
         <CardHeader>
           <CardDescription>
             Make changes to your account here. Click save when you're done.
           </CardDescription>
         </CardHeader>
-        <CardContent class="space-y-2">
-          <div class="space-y-1">
+        <CardContent class="">
+          <div class=" mb-5 flex items-center space-x-2">
+            <div class=" w-50">
             <Label for="name">Email</Label>
             <Input id="name" default-value="" />
           </div>
-          <div class="space-y-1">
-            <Label for="name">First Name</Label>
-            <Input id="name" default-value="" />
-          </div>
-          <div class="space-y-1">
-            <Label for="username">Last Name</Label>
-            <Input id="username" default-value="" />
-          </div>
-          <div class="space-y-1">
+          <div class=" w-50">
             <Label for="name">Email Verified</Label>
             <Input id="name" default-value="" />
           </div>
-          <div class="space-y-1">
+          </div>
+          <div class=" mb-5 flex items-center space-x-2">
+            <div class=" w-50">
+            <Label for="name">First Name</Label>
+            <Input id="name" default-value="" />
+          </div>
+            <div class=" w-50">
+            <Label for="username">Last Name</Label>
+            <Input id="username" default-value="" />
+          </div>
+          </div>
+
+          <div class="mb-5 flex items-center space-x-2">
+            <div class="w-50">
             <Label for="name">Created At</Label>
             <Input id="name" default-value="" />
           </div>
-          <div class="space-y-1">
+          <div class="w-50">
             <Label for="name">Updated At</Label>
             <Input id="name" default-value={{current_user.updated_on}} />
+          </div>
           </div>
         </CardContent>
         <CardFooter>
@@ -97,11 +104,11 @@ const logUser = () => console.log(current_user.value);
           </CardDescription>
         </CardHeader>
         <CardContent class="space-y-2">
-          <div class="space-y-1">
+          <div class="space-y-1 w-50">
             <Label for="current">Current password</Label>
             <Input id="current" type="password" />
           </div>
-          <div class="space-y-1">
+          <div class="space-y-1 w-50">
             <Label for="new">New password</Label>
             <Input id="new" type="password" />
           </div>

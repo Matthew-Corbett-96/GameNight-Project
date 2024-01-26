@@ -18,7 +18,9 @@ function navigateToRegister(): void {
 
 
 <template>
-<div class="grid grid-cols-6 gap-20 prose prose-slate mx-auto base:prose-base ">
+  <div class="bg-[url('src/assets/boardgameImg.jpg')] bg-cover">
+    <div class=" backdrop-blur-xl bg-white/30">
+      <div class="grid grid-cols-6 gap-20 prose prose-slate mx-auto base:prose-base">
   <div class="col-start-1 col-end-2  sticky top-0 py-10 -mx-20 flex flex-col  ">
     <div class="fixed drop-shadow-md hover:drop-shadow-xl">
       <a href="#sec-about-gamenight" class="block text-black py-1 px-2 no-underline hover:bg-gray-300">About</a>
@@ -125,6 +127,10 @@ function navigateToRegister(): void {
       
     </section>
   </div>
+</div>
+    </div>
+
+
 </div>
 </template>
 
