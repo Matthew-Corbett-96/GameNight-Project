@@ -5,3 +5,4 @@ Flask-Migrate
 # flask rest api 
 Flask-RESTful
 Flask-cors
+python-dotenv

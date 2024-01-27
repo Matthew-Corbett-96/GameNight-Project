@@ -9,10 +9,9 @@ from flask_migrate import Migrate
 def create_app() -> Flask:
     app = Flask(__name__)
     api = Api(app)
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
-    app.config['JWT_SECRET_KEY'] = os.environ['JWT_SECRET_KEY']
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     CORS(app, 
-         origins=["http://localhost:3000", os.environ.get("AUTH0_DOMAIN")],
+         origins=[os.environ.get("CLIENT_ORIGIN_URL"), os.environ.get("AUTH0_DOMAIN")],
          methods=['GET', 'POST', 'PUT', 'OPTIONS', 'DELETE'],
          allow_headers=['Origin', 'Content-Type', 'Accept']
          )
