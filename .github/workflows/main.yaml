@@ -1,34 +1,3 @@
-# # build image and push to aws ecr with tag backend:latest
-# permissions:
-#   id-token: write # This is required for requesting the JWT
-#   contents: read  # This is required for actions/checkout
-
-# name: Build and Push Docker Image
-# on:
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Checkout repo
-#       uses: actions/checkout@v3
-#     - name: Configure AWS credentials
-#       uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
-#       with:
-#         role-to-assume: arn:aws:iam::211125573631:user/Matthew-Corbett
-#         aws-region: aws-region-1
-#     - name: Build and Push Docker Image
-#       uses: aws-actions/amazon-ecr-login@v2
-#       with:
-#           registries: f5d8h7v1  # Assuming 'f5d8h7v1' is your registry ID, and it's placed in an array if necessary
-#           region: us-east-1
-#           mask-password: true
-#           registry-type: public
-#           skip-logout: false
-# Path: .github/workflows/main.yaml
 name: Deploy to ECR
 
 on:
@@ -61,7 +30,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: latest
         run: |
-          docker build -t $ECR_REGISTRY/game-night-ecr:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/game-night-ecr:$IMAGE_TAG -f backend/Dockerfile .
           docker push $ECR_REGISTRY/game-night-ecr:$IMAGE_TAG
 
 
