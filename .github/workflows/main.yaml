@@ -33,5 +33,5 @@ jobs:
           IMAGE_TAG: backend
         working-directory: ./backend
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t f5d8h7v1/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push f5d8h7v1/$ECR_REPOSITORY:$IMAGE_TAG
