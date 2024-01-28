@@ -34,4 +34,5 @@ jobs:
         working-directory: ./backend
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG public.ecr.aws/f5d8h7v1/game-night-ecr:$IMAGE_TAG
           docker push public.ecr.aws/f5d8h7v1/game-night-ecr:$IMAGE_TAG
