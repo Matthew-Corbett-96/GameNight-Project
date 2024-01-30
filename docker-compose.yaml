@@ -28,8 +28,8 @@ services:
       - VITE_AUTH0_CALLBACK_URL=http://localhost:3000/callback
       - VITE_API_SERVER_URL=http://localhost:5000
 
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
   
   backend:
     container_name: backend
@@ -44,45 +44,47 @@ services:
       - FLASK_APP=flaskr/app.py:create_app()
       - FLASK_ENV=development
       - FLASK_RUN_HOST=0.0.0.0
-      - JWT_SECRET_KEY=SuperSecret
-      - DATABASE_URL=postgresql://postgres:postgrespw@db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:yzRyp)n9_{g1[6|#$YPHPy!MH1?p@gamenight-dev-db.cdsw82mo2hu8.us-east-1.rds.amazonaws.com:5432/gamenight_dev_db
       - CLIENT_ORIGIN_URL=http://localhost:3000
       - AUTH0_AUDIENCE=Flask-Backend-API
       - AUTH0_DOMAIN=dev-4tze8y46hhx3kohe.us.auth0.com
+      - TWILIO_ACCOUNT_SID=AC5bb7167148efcb445b70b2d1c5437b55
+      - TWILIO_AUTH_TOKEN=a88a04a18ff35e5e1a346298e0e76fe4
+      - TWILIO_NUMBER=+14752671789
     networks:
       - main
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
 
-  db:
-    container_name: database
-    image: postgres:latest
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=postgrespw
-    networks:
-      - main
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # db:
+  #   container_name: database
+  #   image: postgres:latest
+  #   environment:
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_USERNAME=postgres
+  #     - POSTGRES_PASSWORD=postgrespw
+  #   networks:
+  #     - main
+  #   ports:
+  #     - 5432:5432
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
 
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4:latest
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: matthewjcorbett96@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: SuperSecret
-    networks:
-      - main
-    ports:
-      - 5050:80
-    volumes:
-      - ./pgadmin_data:/var/lib/pgadmin  # Persist PgAdmin data
-    user: "5050:5050"
-    depends_on:
-      - db
+  # pgadmin:
+  #   container_name: pgadmin
+  #   image: dpage/pgadmin4:latest
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: matthewjcorbett96@gmail.com
+  #     PGADMIN_DEFAULT_PASSWORD: SuperSecret
+  #   networks:
+  #     - main
+  #   ports:
+  #     - 5050:80
+  #   volumes:
+  #     - ./pgadmin_data:/var/lib/pgadmin  # Persist PgAdmin data
+  #   user: "5050:5050"
+  #   depends_on:
+  #     - db
 
   
