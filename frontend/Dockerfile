@@ -9,7 +9,7 @@ COPY package.json ./
 COPY package-lock.json ./
 
 # Install dependencies
-RUN /bin/bash -c "npm install"
+RUN /bin/bash -c "npm i && npm build"
 
 # Copy the rest of your app's source code
 COPY . .
