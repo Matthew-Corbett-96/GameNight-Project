@@ -18,5 +18,13 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src/@/"),
     },
-  }
+  },
+  build: {
+    sourcemap: true,
+    copyPublicDir: true,
+    target: "esnext",
+    outDir: "dist",
+    assetsDir: "assets",
+    emptyOutDir: true,
+  },
 })

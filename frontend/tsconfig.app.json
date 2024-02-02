@@ -2,26 +2,16 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/store/*", "env.d.ts"],
   "compilerOptions": {
-    /* Bundler mode */
-    // "moduleResolution": "bundler",
-    // "allowImportingTsExtensions": true,
-    // "resolveJsonModule": true,
-    // "isolatedModules": true,
-    // "noEmit": true,
-    // "jsx": "preserve",
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-
     /*  Setting @ Short Cut for components    */
     "baseUrl": ".",
     "paths": {
       "@": ["./src/@/*"]
     }
   },
-  
   "references": [{ "path": "./tsconfig.node.json" }]
 }
