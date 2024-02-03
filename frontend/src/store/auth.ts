@@ -16,7 +16,7 @@ export const useAuthStore = defineStore(
          // headers.append('Authorization', `Bearer ${token.value}`);
          headers.append('Content-Type', 'application/json');
          headers.append('Accept', 'application/json');
-         headers.append('Origin', 'http://localhost:3000');
+         headers.append('Origin', import.meta.url);
          return headers;
       });
 
