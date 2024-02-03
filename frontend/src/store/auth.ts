@@ -17,6 +17,7 @@ export const useAuthStore = defineStore(
          headers.append('Content-Type', 'application/json');
          headers.append('Accept', 'application/json');
          headers.append('Origin', import.meta.url);
+         headers.append('Access-Control-Allow-Origin', '*');
          return headers;
       });
 
