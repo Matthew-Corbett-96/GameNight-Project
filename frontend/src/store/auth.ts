@@ -93,7 +93,7 @@ export const useAuthStore = defineStore(
             });
             const data = await response.json();
             current_user.value = data.data.user as AppUser;
-         } catch (e) {
+         } catch (e: any) {
             console.error('Somthing Went Wrong:', e);
          }
       }
