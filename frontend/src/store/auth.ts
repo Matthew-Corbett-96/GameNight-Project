@@ -86,7 +86,7 @@ export const useAuthStore = defineStore(
    async function updateCurrentUser(): Promise<void> {
       if ( typeof getCurrentUser.value.username === 'undefined' ) {
          try {
-            const response = await fetch('http://localhost:5000/auth0/users/' + getAuthProfile.value.sub, {
+            const response = await fetch( import.meta.env.VITE_API_SERVER_URL  + '/auth0/users/' + getAuthProfile.value.sub, {
                method: 'GET',
                headers: getHeaders.value,
                mode: 'cors',
