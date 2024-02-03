@@ -23,6 +23,7 @@ const authStore = useAuthStore();
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <v-spacer></v-spacer>
+      <v-btn variant="text" v-if="authStore.isLoggedIn" to="/dashboard">Dashboard</v-btn>
       <v-btn variant="text" v-if="authStore.isLoggedIn" to="/games">Games</v-btn>
       <v-btn variant="text" v-if="authStore.isLoggedIn" to="/profile">Profile</v-btn>
       <v-btn variant="text" to="/about">About</v-btn>
