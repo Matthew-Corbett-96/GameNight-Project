@@ -21,4 +21,4 @@ COPY . /app
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "run:app"]
+CMD ["gunicorn", "flaskr.run:app"]
