@@ -6,3 +6,4 @@ Flask-RESTful
 Flask-cors
 python-dotenv
 twilio
+gunicorn
