@@ -13,7 +13,7 @@ def create_app() -> Flask:
     CORS(app, 
          origins=[os.environ.get("CLIENT_ORIGIN_URL"), os.environ.get("AUTH0_DOMAIN")],
          methods=['GET', 'POST', 'PUT', 'OPTIONS', 'DELETE'],
-         allow_headers=['Origin', 'Content-Type', 'Accept']
+         allow_headers=['Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'x-auth-token', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Headers', 'Access-Control-Allow-Methods']
          )
     init_app(app)
     Migrate(app, db)
