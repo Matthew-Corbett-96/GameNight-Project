@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { computed, type Ref, ref } from "vue";
 import { useAuth0 } from '@auth0/auth0-vue';
 import { type User} from '@auth0/auth0-spa-js';
-import type { AppUser } from "@/main";
+import type { AppUser } from "../main";
 
 export const useAuthStore = defineStore(
    'auth',
@@ -16,7 +16,8 @@ export const useAuthStore = defineStore(
          // headers.append('Authorization', `Bearer ${token.value}`);
          headers.append('Content-Type', 'application/json');
          headers.append('Accept', 'application/json');
-         headers.append('Origin', 'http://localhost:3000');
+         headers.append('Origin', import.meta.url);
+         headers.append('Access-Control-Allow-Origin', '*');
          return headers;
       });
 
@@ -86,14 +87,14 @@ export const useAuthStore = defineStore(
    async function updateCurrentUser(): Promise<void> {
       if ( typeof getCurrentUser.value.username === 'undefined' ) {
          try {
-            const response = await fetch('http://localhost:5000/auth0/users/' + getAuthProfile.value.sub, {
+            const response = await fetch( import.meta.env.VITE_API_SERVER_URL  + '/auth0/users/' + getAuthProfile.value.sub, {
                method: 'GET',
                headers: getHeaders.value,
                mode: 'cors',
             });
             const data = await response.json();
             current_user.value = data.data.user as AppUser;
-         } catch (e) {
+         } catch (e: any) {
             console.error('Somthing Went Wrong:', e);
          }
       }

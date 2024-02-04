@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore } from './store/auth';
 import { RouterView } from 'vue-router';
+import { Avatar, AvatarFallback, AvatarImage } from '../src/@/components/ui/avatar'
 
 const links = [
   'About Us',
@@ -17,20 +18,22 @@ const authStore = useAuthStore();
   <v-app>
 
     <v-app-bar scroll-behavior="elevate">
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-      <v-toolbar-title>Game Night</v-toolbar-title>
+      <Avatar class="ml-4">
+        <AvatarImage src="src\assets\logoo.jpg" alt="@radix-vue" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
       <v-spacer></v-spacer>
+      <v-btn variant="text" v-if="authStore.isLoggedIn" to="/dashboard">Dashboard</v-btn>
       <v-btn variant="text" v-if="authStore.isLoggedIn" to="/games">Games</v-btn>
       <v-btn variant="text" v-if="authStore.isLoggedIn" to="/profile">Profile</v-btn>
-      <v-btn variant="text" v-if="authStore.isLoggedIn" to="/about">About</v-btn>
+      <v-btn variant="text" to="/about">About</v-btn>
       <v-btn variant="text" v-if="authStore.isLoggedIn" @click="authStore.Logout">Logout</v-btn>
       <v-btn variant="text" v-if="!authStore.isLoggedIn" @click="authStore.Login">Login</v-btn>
       <v-btn variant="text" v-if="!authStore.isLoggedIn" @click="authStore.Register">Register</v-btn>
-
     </v-app-bar>
 
     <v-main>
-      <RouterView />
+      <RouterView  />
     </v-main>
 
     <v-footer class="bg-grey-lighten-1">

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard } from '@auth0/auth0-vue'
+import LoginViewVue from '../views/LoginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,23 +8,23 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: () => import('@/views/LoginView.vue')
+      component: LoginViewVue
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginView.vue')
+      component: LoginViewVue
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('@/views/DashboardView.vue'),
+      component: () => import('../views/DashboardView.vue'),
       beforeEnter: authGuard
     },
     {
       path: '/about',
       name: 'about',
-      component: () => import('@/views/AboutView.vue')
+      component: () => import('../views/AboutView.vue')
     },
     {
       path: '/profile',

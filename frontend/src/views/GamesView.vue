@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, type Ref } from 'vue';
-import { type Game, type GameFormData } from '@/main';
-import { useGameStore } from '@/store/games';
+import { type Game, type GameFormData } from '../main';
+import { useGameStore } from '../store/games';
+import {Button} from '../@/components/ui/button'
 
 const dialog = ref(false);
 const gameStore = useGameStore();
@@ -59,13 +60,14 @@ function updateGame(formData: GameFormData) {
 </script>
 
 <template>
-  <h1 class="text-h2 text-center"> Games </h1>
+  <h1 class="text-h2 text-center mb-36"> Games </h1>
 
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024" transition="dialog-bottom-transition">
 
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> Create Game </v-btn>
+        <Button v-bind="props">Create Game</Button>
+        <!-- <v-btn classcolor="primary" v-bind="props"> Create Game </v-btn> -->
       </template>
 
       <v-card>

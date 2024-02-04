@@ -2,8 +2,8 @@
 import { defineStore } from 'pinia'
 import { useToast } from 'vue-toastification'
 import { computed, type Ref, ref } from "vue";
-import { useAuthStore } from '@/store/auth';
-import type { APIResponse, AppUser, ErrorAPIResponse, Game, GameFormData } from "@/main";
+import { useAuthStore } from './auth';
+import type { APIResponse, AppUser, ErrorAPIResponse, Game, GameFormData } from "../main";
 
 export const useGameStore = defineStore(
    'games',
@@ -19,7 +19,7 @@ export const useGameStore = defineStore(
    // Functions for fetching games from the backend
    async function fetchGames(): Promise<void> {
       try {
-         let response = await fetch('http://localhost:5000/games/');
+         let response = await fetch(import.meta.env.VITE_API_SERVER_URL + '/games/');
          let data: APIResponse = await response.json();
          
          if (data.status === 200)
@@ -36,7 +36,7 @@ export const useGameStore = defineStore(
    async function deleteGame(game: Game) {
 
       try {
-         let response = await fetch('http://localhost:5000/games/' + game.id, {
+         let response = await fetch( import.meta.env.VITE_API_SERVER_URL +  '/games/' + game.id, {
          method: 'DELETE',
          mode: 'cors',
          headers: headers
@@ -61,7 +61,7 @@ export const useGameStore = defineStore(
     
       console.log(formData)
       try {
-         let response = await fetch('http://localhost:5000/games/', {
+         let response = await fetch(import.meta.env.VITE_API_SERVER_URL + '/games/', {
            method: 'POST',
            mode: 'cors',
            headers: headers,
@@ -97,7 +97,7 @@ export const useGameStore = defineStore(
       }
     
       try {
-         let response = await fetch('http://localhost:5000/games/' + game.id, {
+         let response = await fetch(import.meta.env.VITE_API_SERVER_URL + '/games/' + game.id, {
            method: 'PUT',
            mode: 'cors',
            headers: headers,
