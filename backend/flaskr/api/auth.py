@@ -8,7 +8,7 @@ class UserAuth0Class(Resource):
             user: User = User.query.filter_by(auth0_id=auth0_id).first()
             if user is None:
                 return send_json_response(Response404('User Not Found'))
-            
+            # TODO: Send a 201 instead of a 200
             return send_json_response(Response200(data={"user" : user.to_dict()}))
 
 

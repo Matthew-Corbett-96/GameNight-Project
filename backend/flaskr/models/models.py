@@ -75,6 +75,7 @@ class Game(db.Model, MixinBase):
 
     name = db.Column(db.String(64), unique=True)
     description = db.Column(db.String(256))
+    house_rules = db.Column(db.String(256), nullable=True)
     min_players = db.Column(db.Integer)
     max_players = db.Column(db.Integer)
 
