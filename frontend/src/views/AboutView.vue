@@ -18,8 +18,8 @@ function navigateToRegister(): void {
 
 
 <template>
-  <div class="bg-[url('src/assets/boardgameImg.jpg')] bg-cover">
-    <div class=" backdrop-blur-xl bg-white/30">
+  <!-- <div class="bg-[url('src/assets/boardgameImg.jpg')] bg-cover">
+    <div class=" backdrop-blur-xl bg-white/30"> -->
       <div class="grid grid-cols-6 gap-20 prose prose-slate mx-auto base:prose-base">
   <div class="col-start-1 col-end-2  sticky top-0 py-10 -mx-20 flex flex-col  ">
     <div class="fixed drop-shadow-md hover:drop-shadow-xl">
@@ -35,9 +35,9 @@ function navigateToRegister(): void {
   <Separator orientation="vertical" class="my-4"/>
   </div>
 
-
   <div class="col-start-3 col-end-10 -mx-16">
-    <section  id="sec-about-gamenight" class="about">
+    <div id="sec-about-gamenight"></div>
+    <section  class="about">
       <h3 >About Game Night</h3>
       <p>
         Welcome to our Game Night, a cherished tradition where friends,
@@ -61,7 +61,8 @@ function navigateToRegister(): void {
     </section>
     <br>
 
-    <section id="sec-rules" class="rules-section">
+    <div id="sec-rules"></div>
+    <section class="rules-section">
       <h3>Our Rules</h3>
       <p class="lead">
         At Game Night, we believe in fair play, respect, and above all,
@@ -79,7 +80,8 @@ function navigateToRegister(): void {
     </section>
     <br>
 
-    <section id="sec-games" class="games-section">
+    <div id="sec-games"></div>
+    <section class="games-section">
       <h2>Our Games</h2>
       <p>
         Our Game Night features a wide variety of games, from classic
@@ -92,7 +94,8 @@ function navigateToRegister(): void {
     </section>
     <br>
 
-    <section id="sec-community" class="community-section">
+    <div id="sec-community"></div>
+    <section class="community-section">
       <h2>Our Community</h2>
       <p>
         Our Game Night is not just an event but a community where we
@@ -128,10 +131,8 @@ function navigateToRegister(): void {
     </section>
   </div>
 </div>
-    </div>
-
-
-</div>
+    <!-- </div>
+</div> -->
 </template>
 
 <style scoped>
