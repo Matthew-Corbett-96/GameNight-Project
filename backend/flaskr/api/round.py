@@ -27,7 +27,11 @@ class RoundRestClass(Resource):
         if game is None:
             return send_json_response(Response404("Game Not Found"))
 
-        round: Round = Round(game_night_id=game_night.id, game_id=game.id)
+        round: Round = Round(
+            game_night_id=game_night.id, 
+            game_id=game.id,
+            notes=data.get("notes", None)
+        )
         db.session.add(round)
         db.session.commit()
         return send_json_response(Response200(data={"round": round.to_dict()}))

@@ -24,7 +24,12 @@ class GameNightRestClass(Resource):
 
     def post(self) -> Response:
         data = request.json
-        game_night: GameNight = GameNight(date=data["date"])
+        game_night: GameNight = GameNight(
+            date=data.get("date"),
+            location=data.get("location", None),
+            time=data.get("time", None),
+            notes=data.get("notes", None),
+        )
         db.session.add(game_night)
         db.session.commit()
         return send_json_response(

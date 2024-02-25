@@ -1,20 +1,20 @@
 from flask import Flask, Response
 from flask_restful import Api
-from .response import (
+from ..api.response import (
     Response200,
     Response400,
     Response404,
     Response500,
     send_json_response,
 )
-from .user import setup_routes_for_user
-from .auth import setup_routes_for_auth0
-from .game import setup_routes_for_game
-from .gamenight import setup_routes_for_game_night
-from .round import setup_routes_for_round
-from .rsvp import setup_routes_for_rsvp_log
-from .role import setup_routes_for_user_role
-from .notification import setup_routes_for_notification
+from ..api.user import setup_routes_for_user
+from ..api.Auth0.auth import setup_routes_for_auth0
+from ..api.game import setup_routes_for_game
+from ..api.gamenight import setup_routes_for_game_night
+from ..api.round import setup_routes_for_round
+from ..api.rsvp import setup_routes_for_rsvp_log
+from ..api.role import setup_routes_for_user_role
+from ..api.notification import setup_routes_for_notification
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 import os

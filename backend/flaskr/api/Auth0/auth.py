@@ -1,7 +1,7 @@
 from flask import Response
 from flask_restful import Resource, Api
-from ..models.models import User
-from .response import Response200, Response404, send_json_response
+from ...models.models import User
+from ..response import Response200, Response404, send_json_response
 
 class UserAuth0Class(Resource):
         def get(self, auth0_id: str) -> Response:
