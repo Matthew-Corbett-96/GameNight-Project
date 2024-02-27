@@ -5,9 +5,9 @@ from flask_migrate import Migrate
 import os
 from .router.routes import setup_routes
 from .models.models import init_app, db
-from apscheduler.schedulers.background import BackgroundScheduler
+from .schedule import create_scheduler
 
-def create_app() -> Flask:
+def create_app():
     app = Flask(__name__)
     api = Api(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
@@ -33,11 +33,10 @@ def create_app() -> Flask:
             "Access-Control-Allow-Methods",
         ],
     )
-    # set up background task scheduler
-    scheduler = BackgroundScheduler()
 
     # Initialize the database connection and create tables
     init_app(app)
     migrate = Migrate(app=app, db=db, directory="migrations", render_as_batch=True)
+    scheduler = create_scheduler()
     setup_routes(app, api)
     return app

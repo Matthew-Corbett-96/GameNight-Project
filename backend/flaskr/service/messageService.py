@@ -15,6 +15,8 @@ class MessageService:
         self.EMAIL_API_URL = os.environ.get("EMAIL_API_URL")
         self.EMAIL_API_FROM = os.environ.get("EMAIL_API_FROM")
 
+   # --------------------------------------------------------------------------
+   # Private Methods
     def send_alert(self, method: str, userList: list[User], message: str) -> bool:
         """Sends alert to users based on the method provided
 
@@ -33,9 +35,6 @@ class MessageService:
             raise ValueError(
                 f"Invalid method: {method}. Allowed methods are: SMS, EMAIL"
             )
-
-    # --------------------------------------------------------------------------
-    # Private Methods
 
     def send_sms(self, message: str, to: str = "") -> str:
         try:

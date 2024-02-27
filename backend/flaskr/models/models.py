@@ -86,9 +86,9 @@ class Game(db.Model, MixinBase):
 class GameNight(db.Model, MixinBase):
     __tablename__ = "game_nights"
 
-    date = db.Column(db.DateTime, server_default=func.now())
+    date = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String(100), nullable=True)
-    time = db.Column(db.Time, nullable=True)
+    time = db.Column(db.Time, nullable=False)
     rounds = db.relationship("Round", backref="game_night")
     notes = db.Column(db.String(256), nullable=True)
     # rsvp_logs 
