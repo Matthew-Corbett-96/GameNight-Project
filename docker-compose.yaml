@@ -68,7 +68,7 @@ services:
     networks:
       - main
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -82,7 +82,7 @@ services:
     networks:
       - main
     ports:
-      - 5050:80
+      - "5050:80"
     volumes:
       - ./pgadmin_data:/var/lib/pgadmin  # Persist PgAdmin data
     user: "5050:5050"

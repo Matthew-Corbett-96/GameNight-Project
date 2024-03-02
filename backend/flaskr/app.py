@@ -7,9 +7,10 @@ from .router.routes import setup_routes
 from .models.models import init_app, db
 from .schedule import create_scheduler
 
+
 def create_app():
     app = Flask(__name__)
-    api = Api(app)
+    api = Api(app)  # TODO: Add Prefix 'api/v1/' to api routes
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
         "DATABASE_URL", "postgresql://postgres:postgrespw@localhost:5432/postgres"
     )
