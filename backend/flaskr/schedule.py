@@ -29,8 +29,8 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
         args=(app,),
         trigger="cron",
         day_of_week="wed",
-        hour=17,
-        minute=35,
+        hour=18,
+        minute=0,
         id="day_before_alert"
     )
     # game day alert job
@@ -39,8 +39,8 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
         args=(app,),
         trigger="cron",
         day_of_week="wed",
-        hour=17,
-        minute=36,
+        hour=18,
+        minute=1,
         id="game_day_alert"
     )
     return scheduler
@@ -57,6 +57,6 @@ def scheduledDayBeforeAlertTask(app: Flask) -> None:
     print("Running scheduled task")
     with app.app_context():
         messageService = MessageService()
-        userList: list[User] = [ User.query.filter_by(username='MattyCorbs966').first() ]
+        userList: list[User] = [ User.query.filter_by(username='matthewcorbett').first() ]
         messageService.sendDayBeforeAlert(userList)
     print("Scheduled task completed")
