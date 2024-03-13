@@ -15,6 +15,10 @@ from ..api.round import setup_routes_for_round
 from ..api.rsvp import setup_routes_for_rsvp_log
 from ..api.role import setup_routes_for_user_role
 from ..api.notification import setup_routes_for_notification
+from twilio.rest import Client
+from twilio.rest.api.v2010.account.message import MessageInstance
+from twilio.base.exceptions import TwilioRestException
+import os 
 
 
 def setup_routes(app: Flask, api: Api) -> None:
@@ -47,3 +51,22 @@ def setup_routes(app: Flask, api: Api) -> None:
     @app.errorhandler(400)
     def bad_request(error) -> Response:
         return send_json_response(Response400())
+    
+    @app.route("/test", methods=["GET"])
+    def test() -> Response:
+        try:
+            account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+            auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+            messageservicesid = os.environ.get('TWILIO_MESSAGE_SERVICE_SID')
+            client = Client(account_sid, auth_token)
+
+            messageId = client.messages.create(
+                messaging_service_sid=messageservicesid,
+                body='Test',
+                to='+15082438026'
+            )
+            return send_json_response(Response200(f"Message sent: {messageId.sid}"))
+        except TwilioRestException as e:
+            raise e
+        except Exception as e:
+            raise e

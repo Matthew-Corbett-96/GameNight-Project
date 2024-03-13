@@ -15,6 +15,27 @@ class MessageService:
         self.EMAIL_API_URL = os.environ.get("EMAIL_API_URL")
         self.EMAIL_API_FROM = os.environ.get("EMAIL_API_FROM")
 
+    def sendGameDayAlert(self, userList: list[User]) -> None:
+        """Sends alert to users on game day
+
+        Keyword arguments:
+        userList -- list of users to send the alert to
+        Return: None
+        """
+    
+        message = "Hello, it's game day! Don't forget to join the games at 730pm."
+        self.send_alert("SMS", userList, message)
+
+    def sendDayBeforeAlert(self, userList: list[User]) -> None:
+        """Sends alert to users the day before the game
+
+        Keyword arguments:
+        userList -- list of users to send the alert to
+        Return: None
+        """
+        message = "Hello, don't forget to join the game tomorrow at 730pm. While you cannot RSVP here (yet) please let the host know if you plan to attend. Thanks!"
+        self.send_alert("SMS", userList, message)
+
    # --------------------------------------------------------------------------
    # Private Methods
     def send_alert(self, method: str, userList: list[User], message: str) -> bool:
@@ -38,6 +59,7 @@ class MessageService:
 
     def send_sms(self, message: str, to: str = "") -> str:
         try:
+            print(f"Sending Game Day Alert: {to}")
             client = Client(self.TWILIO_ACCOUNT_SID, self.TWILIO_AUTH_TOKEN)
             message: MessageInstance = client.messages.create(
                 body=message,
