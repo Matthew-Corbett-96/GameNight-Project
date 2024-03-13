@@ -29,8 +29,8 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
         args=(app,),
         trigger="cron",
         day_of_week="wed",
-        hour=14,
-        minute=25,
+        hour=17,
+        minute=35,
         id="day_before_alert"
     )
     # game day alert job
@@ -39,8 +39,8 @@ def create_scheduler(app: Flask) -> BackgroundScheduler:
         args=(app,),
         trigger="cron",
         day_of_week="wed",
-        hour=14,
-        minute=27,
+        hour=17,
+        minute=36,
         id="game_day_alert"
     )
     return scheduler
