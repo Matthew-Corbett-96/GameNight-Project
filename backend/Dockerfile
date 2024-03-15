@@ -19,7 +19,6 @@ RUN pip install --upgrade pip && \
 COPY . /app
 
 # make entrypoint.sh executable
-RUN dir
 RUN chmod +x deployment/worker-entrypoint.sh && \
     chmod +x deployment/server-entrypoint.sh
 

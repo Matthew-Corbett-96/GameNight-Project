@@ -21,7 +21,7 @@ def create_app():
     )
     app.config["CELERY_CONFIG"] = {
         "broker_url": os.environ.get("CELERY_BROKER_URL", "redis://redis"),
-        "result_backend": os.environ.get("CELERY_RESULT_BACKEND", "redis://redis"),
+        "result_backend": os.environ.get("CELERY_RESULT_URL", "redis://redis"),
         "beat_schedule": {
             "simple_test": {
                 "task": "flaskr.tasks.simple_test",
@@ -34,8 +34,8 @@ def create_app():
             "send_day_of_message": {
                 "task": "flaskr.tasks.send_day_of_message",
                 "schedule": crontab(day_of_week="5", hour="12", minute="0"),
-        },
-      }
+            },
+        }
     }
     CORS(
         app,

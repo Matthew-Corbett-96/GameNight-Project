@@ -67,7 +67,6 @@ function updateGame(formData: GameFormData) {
 
       <template v-slot:activator="{ props }">
         <Button v-bind="props">Create Game</Button>
-        <!-- <v-btn classcolor="primary" v-bind="props"> Create Game </v-btn> -->
       </template>
 
       <v-card>
@@ -129,12 +128,12 @@ function updateGame(formData: GameFormData) {
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+          <Button color="blue-darken-1" variant="default" @click="dialog = false">
             Close
-          </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="createGame">
+          </Button>
+          <Button color="blue-darken-1" variant="default" @click="createGame">
             Submit
-          </v-btn>
+          </Button>
         </v-card-actions>
 
       </v-card>
