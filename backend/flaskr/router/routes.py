@@ -1,5 +1,4 @@
-from logging import getLogger
-from flask import Flask, Response, Request, request
+from flask import Flask, Response
 from flask_restful import Api
 from ..api.response import (
     Response200,
@@ -17,12 +16,8 @@ from ..api.rsvp import setup_routes_for_rsvp_log
 from ..api.role import setup_routes_for_user_role
 from ..api.notification import setup_routes_for_notification
 from twilio.rest import Client
-from twilio.rest.api.v2010.account.message import MessageInstance
 from twilio.base.exceptions import TwilioRestException
 import os
-from flaskr.tasks import simple_test
-from flaskr.models.models import User
-
 
 def setup_routes(app: Flask, api: Api) -> None:
     # Add resources to api
