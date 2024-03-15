@@ -23,6 +23,10 @@ def create_app():
         "broker_url": os.environ.get("CELERY_BROKER_URL", "redis://redis"),
         "result_backend": os.environ.get("CELERY_RESULT_BACKEND", "redis://redis"),
         "beat_schedule": {
+            "simple_test": {
+                "task": "flaskr.tasks.simple_test",
+                "schedule": crontab(minute="*/1"), 
+            },
             "send_day_before_message": {
                 "task": "flaskr.tasks.send_day_before_message",
                 "schedule": crontab(minute="*/1"),
