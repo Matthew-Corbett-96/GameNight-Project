@@ -15,12 +15,12 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --upgrade pip && \
  pip install --no-cache-dir -r requirements.txt
 
+# Copy the current directory contents into the container at /app
+COPY . /app
+
 # make entrypoint.sh executable
 RUN chmod +x /app/deployment/worker-entrypoint.sh && \
     chmod +x /app/deployment/entrypoint.sh
-
-# Copy the current directory contents into the container at /app
-COPY . /app
 
 # Make port 8000 available for the app
 EXPOSE 8000
