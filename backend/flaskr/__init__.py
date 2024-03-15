@@ -25,15 +25,15 @@ def create_app():
         "beat_schedule": {
             "simple_test": {
                 "task": "flaskr.tasks.simple_test",
-                "schedule": crontab(minute="*/1"), 
+                "schedule": crontab(hour="*/1"), 
             },
             "send_day_before_message": {
                 "task": "flaskr.tasks.send_day_before_message",
-                "schedule": crontab(minute="*/1"),
+                "schedule": crontab(day_of_week="4", hour="12", minute="0"),
             },
             "send_day_of_message": {
                 "task": "flaskr.tasks.send_day_of_message",
-                "schedule": crontab(minute="*/5"),
+                "schedule": crontab(day_of_week="5", hour="12", minute="0"),
         },
       }
     }
