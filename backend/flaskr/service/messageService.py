@@ -1,3 +1,4 @@
+from logging import getLogger
 from twilio.rest import Client
 from twilio.rest.api.v2010.account.message import MessageInstance
 from twilio.base.exceptions import TwilioRestException
@@ -47,6 +48,9 @@ class MessageService:
         """
 
         if method == "SMS":
+            logger = getLogger(__name__)
+            logger.info("Sending SMS")
+            logger.info(f'Env Var: {self.TWILIO_ACCOUNT_SID}  ///  {self.TWILIO_AUTH_TOKEN}  ///  {self.TWILIO_MESSAGE_SERVICE_SID}')
             for user in userList:
                 self.send_sms(message=message, to=user.phone_number)
         elif method == "EMAIL":

@@ -33,6 +33,22 @@ This will start all the services defined in the `docker-compose.yml` file:
 
 Remember to stop the services when you're done by running `docker-compose down`.
 
+## Running the Application Locally with Railway
+
+1. Install Docker and Docker Compose on your machine.
+2. Clone this repository to your local machine.
+3. Navigate to the directory where you have cloned the repository.
+4. Run `docker-compose up` in your terminal.
+
+This will start all the services defined in the `docker-compose.yml` file:
+
+- The Vue.js frontend will be accessible at `http://localhost:3000`
+- The Flask backend will be accessible at `http://localhost:5000`
+- The PostgreSQL database will be accessible at `localhost:5432`
+- The pgAdmin interface will be accessible at `http://localhost:5050`
+
+Remember to stop the services when you're done by running `docker-compose down`.
+
 ## Notes
 
 - Make sure the port numbers provided above aren't being used by other services on your machine. If necessary, you can change the port numbers in the `docker-compose.yml` file.

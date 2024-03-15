@@ -19,6 +19,3 @@ COPY . /app
 
 # Make port 8000 available for the app
 EXPOSE 8000
-
-# Run the application
-CMD ["gunicorn", "flaskr.run:app"]
