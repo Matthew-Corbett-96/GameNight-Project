@@ -71,10 +71,3 @@ def setup_routes(app: Flask, api: Api) -> None:
             raise e
         except Exception as e:
             raise e
-
-    @app.route("/test2", methods=["GET"])
-    def test2() -> Response:
-        logger = getLogger(__name__)
-        logger.info("Test2")
-        simple_test.delay()
-        return send_json_response(Response200(message="Task Sent", data=None))
