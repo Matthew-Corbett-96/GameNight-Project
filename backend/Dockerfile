@@ -19,7 +19,8 @@ RUN pip install --upgrade pip && \
 COPY . /app
 
 # make entrypoint.sh executable
-RUN chmod +x /app/deployment/worker-entrypoint.sh && \
+RUN ls -la && \
+    chmod +x /app/deployment/worker-entrypoint.sh && \
     chmod +x /app/deployment/entrypoint.sh
 
 # Make port 8000 available for the app
