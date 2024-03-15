@@ -35,6 +35,14 @@ def create_app():
                 "task": "flaskr.tasks.send_day_of_message",
                 "schedule": crontab(day_of_week="5", hour="12", minute="0"),
             },
+            "send_hour_on_hour_message": {
+                "task": "flaskr.tasks.send_hour_on_hour_message",
+                "schedule": crontab(day_of_week="5", hour="20-23,0-2", minute="0"),
+            },
+            # "send_hour_on_hour_message": {
+            #     "task": "flaskr.tasks.send_hour_on_hour_message",
+            #     "schedule": crontab(minute="*/1"),
+            # },
         }
     }
     CORS(

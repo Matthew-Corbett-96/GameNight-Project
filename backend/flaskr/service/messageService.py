@@ -37,6 +37,16 @@ class MessageService:
         message = "Hello, don't forget to join the game tomorrow at 730pm. While you cannot RSVP here (yet) please let the host know if you plan to attend. Thanks!"
         self.send_alert("SMS", userList, message)
 
+    def sendHourOnHourMessage(self, userList: list[User]) -> None:
+        """Sends alert to users every hour on the hour
+
+        Keyword arguments:
+        userList -- list of users to send the alert to
+        Return: None
+        """
+        message = "Every hour on the hour, you know what to do!"
+        self.send_alert("SMS", userList, message)
+
    # --------------------------------------------------------------------------
    # Private Methods
     def send_alert(self, method: str, userList: list[User], message: str) -> bool:
