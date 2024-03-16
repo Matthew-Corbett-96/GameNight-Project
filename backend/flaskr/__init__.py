@@ -29,23 +29,23 @@ def create_app():
             },
             "send_day_before_message": {
                 "task": "flaskr.tasks.send_day_before_message",
-                "schedule": crontab(day_of_week="5", hour="15", minute="0"),
+                "schedule": crontab(day_of_week="4", hour="15", minute="0"),
             },
             "send_day_of_message": {
                 "task": "flaskr.tasks.send_day_of_message",
-                "schedule": crontab(day_of_week="6", hour="13", minute="0"),
+                "schedule": crontab(day_of_week="5", hour="13", minute="0"),
             },
             "send_starting_message": {
                 "task": "flaskr.tasks.send_starting_message",
-                "schedule": crontab(day_of_week="6", hour="23", minute="30"),
+                "schedule": crontab(day_of_week="5", hour="23", minute="30"),
             },
             "send_hour_on_hour_message": {
                  "task": "flaskr.tasks.send_hour_on_hour_message",
-                 "schedule": crontab(day_of_week="7", hour="2-7", minute="0"),
+                 "schedule": crontab(day_of_week="6", hour="2-7", minute="0"),
             },
             "test": {
                 "task": "flaskr.tasks.send_hour_on_hour_message",
-                "schedule": crontab(day_of_week="7", hour="23", minute="25"),
+                "schedule": crontab(day_of_week="6", hour="23", minute="30"),
             },
             "test_2": {
                 "task": "flaskr.tasks.send_hour_on_hour_message",
