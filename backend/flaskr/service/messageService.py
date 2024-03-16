@@ -57,9 +57,9 @@ class MessageService:
         Return: True if successful, False if not
         """
 
+        logger = getLogger(__name__)
         if method == "SMS":
-            logger = getLogger(__name__)
-            logger.info("Sending SMS")
+            logger.info("Sending SMS...")
             logger.info(f'Env Var: {self.TWILIO_ACCOUNT_SID}  ///  {self.TWILIO_AUTH_TOKEN}  ///  {self.TWILIO_MESSAGE_SERVICE_SID}')
             for user in userList:
                 self.send_sms(message=message, to=user.phone_number)

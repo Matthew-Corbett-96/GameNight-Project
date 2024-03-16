@@ -22,26 +22,34 @@ def create_app():
     app.config["CELERY_CONFIG"] = {
         "broker_url": os.environ.get("CELERY_BROKER_URL", "redis://redis"),
         "result_backend": os.environ.get("CELERY_RESULT_URL", "redis://redis"),
-        "beat_schedule": {
+        "beat_schedule": { # note that all times are in UTC && 0 is Sunday
             "simple_test": {
                 "task": "flaskr.tasks.simple_test",
                 "schedule": crontab(hour="*/1"), 
             },
             "send_day_before_message": {
                 "task": "flaskr.tasks.send_day_before_message",
-                "schedule": crontab(day_of_week="4", hour="12", minute="0"),
+                "schedule": crontab(day_of_week="5", hour="15", minute="0"),
             },
             "send_day_of_message": {
                 "task": "flaskr.tasks.send_day_of_message",
-                "schedule": crontab(day_of_week="5", hour="12", minute="0"),
+                "schedule": crontab(day_of_week="6", hour="13", minute="0"),
             },
-            "send_hour_on_hour_message_friday": {
-                "task": "flaskr.tasks.send_hour_on_hour_message",
-                "schedule": crontab(day_of_week="5", hour="20-23", minute="0"),
+            "send_starting_message": {
+                "task": "flaskr.tasks.send_starting_message",
+                "schedule": crontab(day_of_week="6", hour="23", minute="30"),
             },
-            "send_hour_on_hour_message_saturday": {
+            "send_hour_on_hour_message": {
                  "task": "flaskr.tasks.send_hour_on_hour_message",
-                 "schedule": crontab(day_of_week="6", hour="0-3", minute="0"),
+                 "schedule": crontab(day_of_week="7", hour="2-7", minute="0"),
+            },
+            "test": {
+                "task": "flaskr.tasks.send_hour_on_hour_message",
+                "schedule": crontab(day_of_week="7", hour="23", minute="25"),
+            },
+            "test_2": {
+                "task": "flaskr.tasks.send_hour_on_hour_message",
+                "schedule": crontab(day_of_week="0", hour="0-3", minute="0"),
             },
         },
         "CELERY_WORKER_TIMEZONE": "EST"
