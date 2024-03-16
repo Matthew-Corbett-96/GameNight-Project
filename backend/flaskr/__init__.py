@@ -44,7 +44,7 @@ def create_app():
                  "schedule": crontab(day_of_week="6", hour="0-3", minute="0"),
             },
         },
-        "CELERY_WORKER_TIMEZONE": "America/New_York"
+        "CELERY_WORKER_TIMEZONE": "EST"
     }
     CORS(
         app,
