@@ -12,15 +12,13 @@ RUN apt-get update && apt-get install -y gcc
 
 # Install dependencies
 COPY requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip && \
- pip install --no-cache-dir -r requirements.txt
+RUN /bin/bash -c "pip install --no-cache-dir -r requirements.txt"
 
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# make entrypoint.sh executable
-RUN chmod +x deployment/worker-entrypoint.sh && \
-    chmod +x deployment/server-entrypoint.sh
+# Make port 5000 available for the app
+EXPOSE 5000
 
-# Make port 8000 available for the app
-EXPOSE 8000
+# Run the application
+CMD ["flask", "run", "--reload"]

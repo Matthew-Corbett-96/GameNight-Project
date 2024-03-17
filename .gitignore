@@ -94,5 +94,4 @@ venv.bak/
 data
 pgadmin_data
 frontend/src/assets/settings.png:Zone.Identifer
-backend/migrations/
 frontend/package-lock.json

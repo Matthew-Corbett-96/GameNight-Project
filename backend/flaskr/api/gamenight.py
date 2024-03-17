@@ -3,7 +3,6 @@ from flask_restful import Api, Resource
 from ..models.models import db, GameNight
 from .response import Response200, Response404, send_json_response
 
-
 class GameNightRestClass(Resource):
     def get(self, game_night_id=None) -> Response:
         if game_night_id is None:
@@ -24,9 +23,18 @@ class GameNightRestClass(Resource):
 
     def post(self) -> Response:
         data = request.json
-        game_night: GameNight = GameNight(date=data["date"])
+        game_night: GameNight = GameNight(
+            date=data.get("date"),
+            location=data.get("location", None),
+            time=data.get("time", None),
+            notes=data.get("notes", None),
+        )
         db.session.add(game_night)
         db.session.commit()
+
+
+
+
         return send_json_response(
             Response200(data={"game_night": game_night.to_dict()})
         )

@@ -5,9 +5,6 @@ import {Button} from '../@/components/ui/button';
 import { useAuthStore } from '../store/auth';
 import { Separator } from '../@/components/ui/separator';
 
-
-
-
 const authStore = useAuthStore();
 
 function navigateToRegister(): void {
@@ -15,7 +12,6 @@ function navigateToRegister(): void {
 }
 
 </script>
-
 
 <template>
   <!-- <div class="bg-[url('src/assets/boardgameImg.jpg')] bg-cover">

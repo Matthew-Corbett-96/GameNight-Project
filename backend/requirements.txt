@@ -6,3 +6,6 @@ Flask-RESTful
 Flask-cors
 python-dotenv
 twilio
+gunicorn
+APScheduler
+celery[redis]

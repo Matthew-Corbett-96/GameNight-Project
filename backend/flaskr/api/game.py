@@ -32,6 +32,8 @@ class GameRestClass(Resource):
             description=data.get("description"),
             min_players=data.get("min_players"),
             max_players=data.get("max_players"),
+            rules=data.get("rules", None),
+            house_rules=data.get("house_rules", None),
         )
         db.session.add(game)
         db.session.commit()
