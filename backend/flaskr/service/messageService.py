@@ -60,7 +60,7 @@ class MessageService:
         logger = getLogger(__name__)
         if method == "SMS":
             logger.info("Sending SMS...")
-            logger.info(f'Env Var: {self.TWILIO_ACCOUNT_SID}  ///  {self.TWILIO_AUTH_TOKEN}  ///  {self.TWILIO_MESSAGE_SERVICE_SID}')
+            # logger.info(f'Env Var: {self.TWILIO_ACCOUNT_SID}  ///  {self.TWILIO_AUTH_TOKEN}  ///  {self.TWILIO_MESSAGE_SERVICE_SID}')
             for user in userList:
                 self.send_sms(message=message, to=user.phone_number)
         elif method == "EMAIL":
@@ -73,7 +73,6 @@ class MessageService:
 
     def send_sms(self, message: str, to: str = "") -> str:
         try:
-            print(f"Sending Game Day Alert: {to}")
             client = Client(self.TWILIO_ACCOUNT_SID, self.TWILIO_AUTH_TOKEN)
             message: MessageInstance = client.messages.create(
                 body=message,
