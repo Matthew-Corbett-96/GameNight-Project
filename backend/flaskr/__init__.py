@@ -59,6 +59,7 @@ def create_app():
         origins=[
             os.environ.get("CLIENT_ORIGIN_URL"),
             os.environ.get("AUTH0_DOMAIN"),
+            os.environ.get("CLIENT_ORIGIN_URL_RAW"),
             # os.environ.get("TWILIO_DOMAIN"),
         ],
         methods=["GET", "POST", "PUT", "OPTIONS", "DELETE"],
