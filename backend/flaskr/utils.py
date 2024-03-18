@@ -1,5 +1,7 @@
+from sys import stdout
 from celery import Celery, Task
 from flask import Flask
+import logging
 
 
 def celery_init_app(app: Flask) -> Celery:
@@ -13,3 +15,12 @@ def celery_init_app(app: Flask) -> Celery:
     celery_app.set_default()
     app.extensions["celery"] = celery_app
     return celery_app
+
+
+def logger_init_app(app: Flask) -> None:
+    logging.basicConfig(
+        stream=stdout, 
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+        )

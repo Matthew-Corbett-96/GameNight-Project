@@ -9,23 +9,21 @@ import os
 from logging import getLogger
 from .router.routes import setup_routes
 from .models.models import init_app, db
-from flaskr.utils import celery_init_app
+from flaskr.utils import celery_init_app, logger_init_app
 
 def create_app():
-    logging.basicConfig(stream=stdout, level=logging.INFO)
-    logger = getLogger(__name__)
     app = Flask(__name__)
+    logger_init_app(app)
+    logger = getLogger(__name__)
     api = Api(app)  # TODO: Add Prefix 'api/v1/' to api routes
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-        "DATABASE_URL", "postgresql://postgres:postgrespw@db:5432/postgres"
-    )
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     app.config["CELERY_CONFIG"] = {
         "broker_url": os.environ.get("CELERY_BROKER_URL", "redis://redis"),
         "result_backend": os.environ.get("CELERY_RESULT_URL", "redis://redis"),
         "beat_schedule": { # note that all times are in UTC && 0 is Sunday
-            "simple_test": {
-                "task": "flaskr.tasks.simple_test",
-                "schedule": crontab(hour="*/1"), 
+            "heartbeat": {
+                "task": "flaskr.tasks.heartbeat",
+                "schedule": crontab(hour="*/5"), 
             },
             "send_day_before_message": {
                 "task": "flaskr.tasks.send_day_before_message",
@@ -51,17 +49,21 @@ def create_app():
                 "task": "flaskr.tasks.send_hour_on_hour_message",
                 "schedule": crontab(day_of_week="0", hour="0-3", minute="0"),
             },
-        },
-        "CELERY_WORKER_TIMEZONE": "EST"
+        }
     }
+    
+    origins = [
+        os.environ.get("CLIENT_ORIGIN_URL"),
+        os.environ.get("AUTH0_DOMAIN"),
+        os.environ.get("CLIENT_ORIGIN_URL_RAW"),
+    ]
+    # Allow for development origins
+    if os.environ.get("FLASK_ENV") == "development":
+        origins.append("http://localhost:5173")
+
     CORS(
         app,
-        origins=[
-            os.environ.get("CLIENT_ORIGIN_URL"),
-            os.environ.get("AUTH0_DOMAIN"),
-            os.environ.get("CLIENT_ORIGIN_URL_RAW"),
-            # os.environ.get("TWILIO_DOMAIN"),
-        ],
+        origins=origins,
         methods=["GET", "POST", "PUT", "OPTIONS", "DELETE"],
         allow_headers=[
             "Origin",

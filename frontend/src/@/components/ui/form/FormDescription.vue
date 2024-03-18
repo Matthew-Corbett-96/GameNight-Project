@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useAttrs } from 'vue'
 import { useFormField } from './useFormField'
-import { cn } from 'src/@/lib/utils'
+import { cn } from '../../../lib/utils'
 
 defineOptions({
   inheritAttrs: false,

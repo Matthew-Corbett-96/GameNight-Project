@@ -23,8 +23,9 @@ const pinia = createPinia().use(createPersistedState());
 const auth0 = createAuth0({
   domain: import.meta.env.VITE_AUTH0_DOMAIN,
   clientId: import.meta.env.VITE_AUTH0_CLIENT_ID,
-  authorizationParams: {
+  authorizationParams: { // Change this to localhost when working locally
     redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL
+    // redirect_uri: 'http://localhost:5173/callback'
   }
 });
 
@@ -62,17 +63,18 @@ export interface AuthProfile extends User {}
 
 export interface AppUser {
   id: string
-  username: string
-  first_name: string
-  last_name: string
-  gender: Gender
-  email: string
-  phone_number: string
-  role_id: string
-  role_name: string
-  is_active: boolean
   created_on: string
   updated_on: string
+  auth0_id: string
+  username: string
+  first_name?: string
+  last_name?: string
+  gender?: Gender
+  email: string
+  phone_number?: string
+  role_id?: string
+  role_name?: string
+  is_active: boolean
   RSVPs: RSVP[]
 }
 
@@ -128,6 +130,8 @@ export interface Game {
   id: string
   name: string
   description: string
+  rules: string
+  house_rules: string
   min_players: number
   max_players: number
   created_on: string
