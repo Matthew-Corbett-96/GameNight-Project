@@ -7,7 +7,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'login',
+      name: 'root',
       component: LoginViewVue
     },
     {
@@ -37,6 +37,11 @@ const router = createRouter({
       name: 'games',
       component: () => import('../views/GamesView.vue'),
       beforeEnter: authGuard
+    },
+    {
+      path: '/playground',
+      name: 'playground',
+      component: () => import('../views/PlaygroundView.vue'),
     },
     {
       path: '/callback',

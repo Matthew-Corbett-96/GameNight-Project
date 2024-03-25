@@ -7,23 +7,21 @@ import { cn } from '../../../lib/utils'
 interface ButtonVariantProps extends VariantProps<typeof buttonVariants> {}
 
 interface Props extends PrimitiveProps {
-  variant?: ButtonVariantProps['variant']
+  color?: ButtonVariantProps['color']
   size?: ButtonVariantProps['size']
-  as?: string
+  as?: 'a'
+  href?: string
 }
 
-withDefaults(defineProps<Props>(), {
-  variant: 'default',
-  size: 'md',
-  as: 'button',
+const props = withDefaults(defineProps<Props>(), {
+  as: 'a',
 })
 </script>
 
 <template>
   <Primitive
-    :as="as"
-    :as-child="asChild"
-    :class="cn(buttonVariants({ variant, size }), $attrs.class ?? '')"
+    v-bind="props"
+    :class="cn(buttonVariants({ color, size }))"
   >
     <slot />
   </Primitive>

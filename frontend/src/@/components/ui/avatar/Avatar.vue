@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { AvatarRoot } from 'radix-vue'
+import { AvatarRoot, type AvatarRootProps } from 'radix-vue'
 import { avatarVariant } from '.'
 import { cn } from '../../../lib/utils'
+import type { VariantProps } from 'class-variance-authority';
 
-interface Props {
-  size?: NonNullable<Parameters<typeof avatarVariant>[0]>['size']
-  shape?: NonNullable<Parameters<typeof avatarVariant>[0]>['shape']
+interface AvatarVariantProps extends VariantProps<typeof avatarVariant> {}
+
+
+// This may cause issue b/c I added AvatarRootProps as parent interface
+interface Props extends AvatarRootProps {
+  size?: AvatarVariantProps['size']
+  shape?: AvatarVariantProps['shape']
   class?: string
 }
 
@@ -16,7 +21,8 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <AvatarRoot :class="cn(avatarVariant({ size, shape }), props.class)">
+  <AvatarRoot 
+    :class="cn(avatarVariant({ size, shape }), props.class)">
     <slot />
   </AvatarRoot>
 </template>

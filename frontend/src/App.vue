@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from './store/auth';
+import { useColorThemeStore } from './store/theme';
 import { RouterView } from 'vue-router';
-import { Avatar, AvatarFallback, AvatarImage } from '../src/@/components/ui/avatar'
+import { Icon } from '@iconify/vue';
+import { Switch } from "./@/components/ui/switch";
+import { Button } from "./@/components/ui/button";
 
 const links = [
   'About Us',
@@ -12,19 +15,23 @@ const links = [
 ]
 
 const authStore = useAuthStore();
+const themeStore = useColorThemeStore();
+function toggleTheme() {
+  themeStore.toggleTheme();
+}
 </script>
 
 <template>
   <v-app>
     <v-app-bar scroll-behavior="elevate">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <a href="/dashboard" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <!-- <img src="src\assets\logoo.jpg" class="h-8" alt="Flowbite Logo" /> -->
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">GameNight</span>
-          </a>
-        </div>
-        <v-spacer></v-spacer>
-        <ul class="flex-grow lg:flex lg:items-center lg:w-auto ">
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <a href="/dashboard" class="flex items-center space-x-3 rtl:space-x-reverse">
+          <!-- <img src="src\assets\logoo.jpg" class="h-8" alt="Flowbite Logo" /> -->
+          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">GameNight</span>
+        </a>
+      </div>
+      <v-spacer></v-spacer>
+      <ul class="flex-grow lg:flex lg:items-center lg:w-auto ">
         <li class="mr-4">
           <a class="inline-block bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded"
             href="/dashboard">Dashboard</a>
@@ -35,8 +42,7 @@ const authStore = useAuthStore();
         </li>
         <li class="mr-4">
           <a class="inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
-            v-if="authStore.isLoggedIn" 
-            href="/profile">Profile</a>
+            v-if="authStore.isLoggedIn" href="/profile">Profile</a>
         </li>
         <li class="mr-4">
           <a class="inline-block bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-2 px-4 border-b-4 border-yellow-700 hover:border-yellow-500 rounded"
@@ -55,17 +61,25 @@ const authStore = useAuthStore();
             v-if="!authStore.isLoggedIn" @click="authStore.Register">Register</a>
         </li>
       </ul>
+
+      <div class="flex flex-row items-center justify-between p-2">
+        <Icon icon="radix-icons:moon"
+          class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Switch @update:checked="toggleTheme" />
+          <Icon icon="radix-icons:sun"
+          class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      </div>
     </v-app-bar>
 
     <v-main>
-      <RouterView  />
+      <RouterView />
     </v-main>
 
     <v-footer class="bg-grey-lighten-1">
       <v-row justify="center" no-gutters>
-        <v-btn v-for="link in links" :key="link" color="primary" variant="text" class="mx-2" rounded="xl">
+        <Button v-for="link in links" :key="link" variant="link" class="mx-2">
           {{ link }}
-        </v-btn>
+        </Button>
         <v-col class="text-center mt-4" cols="12" md="8" sm="4">
           {{ new Date().getFullYear() }} — <strong>White Fence Gang LLC</strong>
         </v-col>

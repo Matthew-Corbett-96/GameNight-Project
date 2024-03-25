@@ -18,5 +18,9 @@ export const avatarVariant = cva(
         square: 'rounded-md',
       },
     },
-  },
+    defaultVariants: {
+      size: 'base',
+      shape: 'circle',
+    },
+  }
 )
