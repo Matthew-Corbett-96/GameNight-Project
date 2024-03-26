@@ -41,14 +41,6 @@ def create_app():
                  "task": "flaskr.tasks.send_hour_on_hour_message",
                  "schedule": crontab(day_of_week="6", hour="2-7", minute="0"),
             },
-            "test": {
-                "task": "flaskr.tasks.send_hour_on_hour_message",
-                "schedule": crontab(day_of_week="6", hour="23", minute="30"),
-            },
-            "test_2": {
-                "task": "flaskr.tasks.send_hour_on_hour_message",
-                "schedule": crontab(day_of_week="0", hour="0-3", minute="0"),
-            },
         }
     }
     
