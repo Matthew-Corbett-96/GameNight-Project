@@ -3,7 +3,7 @@ import { useAuthStore } from './store/auth';
 import { useColorThemeStore } from './store/theme';
 import { RouterView } from 'vue-router';
 import { Icon } from '@iconify/vue';
-import { Switch } from "./@/components/ui/switch";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './@/components/ui/tooltip';
 import { Button } from "./@/components/ui/button";
 
 const links = [
@@ -16,9 +16,6 @@ const links = [
 
 const authStore = useAuthStore();
 const themeStore = useColorThemeStore();
-function toggleTheme() {
-  themeStore.toggleTheme();
-}
 </script>
 
 <template>
@@ -62,13 +59,21 @@ function toggleTheme() {
         </li>
       </ul>
 
-      <div class="flex flex-row items-center justify-between p-2">
-        <Icon icon="radix-icons:moon"
-          class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Switch @update:checked="toggleTheme" />
-          <Icon icon="radix-icons:sun"
-          class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-      </div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="icon" variant="icon" @click="themeStore.toggleTheme">
+              <Icon icon="radix-icons:sun"
+                class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 text-secondary-foreground transition-all dark:-rotate-90 dark:scale-0" />
+              <Icon icon="radix-icons:moon"
+                class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 dark:text-primary" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span>Toggle Theme</span>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </v-app-bar>
 
     <v-main>

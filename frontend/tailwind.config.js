@@ -55,6 +55,7 @@ export const theme = {
       button: {
         DEFAULT: "hsl(var(--button-primary))",
         secondary: "hsl(var(--button-secondary))",
+        icon: "hsl(var(--button-icon))",
       },
     },
     borderRadius: {

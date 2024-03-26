@@ -1,4 +1,4 @@
-import { cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 
 export { default as Button } from './Button.vue'
 
@@ -19,6 +19,8 @@ export const buttonVariants = cva(
           'hover:bg-accent hover:text-accent-foreground',
         link: 
           'text-primary underline-offset-4 hover:underline',
+        icon:
+          'bg-button-icon hover:bg-accent hover:text-accent-foreground text-secondary-forward  hover:dark:bg-button-icon/80',
       },
       size: {
         md: 'h-10 px-4 py-2',
@@ -33,3 +35,5 @@ export const buttonVariants = cva(
     },
   },
 )
+
+export interface ButtonVariantProps extends VariantProps<typeof buttonVariants> {}

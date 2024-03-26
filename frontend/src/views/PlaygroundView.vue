@@ -2,11 +2,14 @@
 import { ref } from 'vue';
 import { Avatar, AvatarImage, AvatarFallback } from '../@/components/ui/avatar'
 import { AlertDialogRoot, AlertDialogTrigger, AlertDialogPortal, AlertDialogOverlay, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from 'radix-vue';
-import { Button } from '../@/components/ui/button'
+import { Button, type ButtonVariantProps} from '../@/components/ui/button'
 import { Checkbox } from '../@/components/ui/checkbox'
 import { Separator } from '../@/components/ui/separator';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../@/components/ui/card';
-import { KeyboardButton } from '../@/components/ui/keyboardButton'
+import { KeyboardButton, type KeyboardButtonVariantProps } from '../@/components/ui/keyboardButton'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger  } from '../@/components/ui/tooltip';
+import { Icon } from '@iconify/vue';
+import { useColorThemeStore } from '../store/theme';
 
 // keyboard button variants
 const colors = ref(['red', 'green', 'blue', 'yellow', 'purple', 'pink', 'gray'])
@@ -17,7 +20,7 @@ const btnSizes = ref(['icon', 'sm', 'md', 'lg',])
 // avatar variants
 const avatarSizes = ref(['sm', 'md', 'lg', 'xl'])
 const avatarShapes = ref(['circle', 'square'])
-
+const themeStore = useColorThemeStore();
 </script>
 
 <template>
@@ -59,10 +62,10 @@ const avatarShapes = ref(['circle', 'square'])
                      </AlertDialogDescription>
                      <div class="flex justify-center mt-4">
                         <AlertDialogCancel>
-                           <Button size="md">Cancel</Button>
+                           <Button>Cancel</Button>
                         </AlertDialogCancel>
                         <AlertDialogAction>
-                           <Button :variant="'destructive'">Confirm</Button>
+                           <Button variant="destructive">Confirm</Button>
                         </AlertDialogAction>
                      </div>
                   </AlertDialogContent>
@@ -81,8 +84,8 @@ const avatarShapes = ref(['circle', 'square'])
          <div class="grid grid-cols-3 gap-4">
             <div v-for="color in colors" :key="color" class="flex flex-col items-center justify-center p-4">
                <KeyboardButton v-for="size in sizes" :key="size"
-                  :color="color as 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'grey' | null | undefined"
-                  :size="size as 'sm' | 'md' | 'lg'">
+                  :color="color as KeyboardButtonVariantProps['color']"
+                  :size="size as KeyboardButtonVariantProps['size']">
                   Button
                </KeyboardButton>
             </div>
@@ -97,8 +100,9 @@ const avatarShapes = ref(['circle', 'square'])
          </div>
          <div class="grid grid-cols-3 gap-4">
             <div v-for="variant in btnVariants" :key="variant" class="flex flex-col items-center justify-center p-4">
-               <Button v-for="size in btnSizes" :size="size as 'sm' | 'md' | 'lg' | 'icon' | null | undefined"
-                  :variant="variant as 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | null | undefined">
+               <Button v-for="size in btnSizes" 
+                  :size="size as ButtonVariantProps['size']"
+                  :variant="variant as ButtonVariantProps['variant']">
                   Button
                </Button>
             </div>
@@ -108,14 +112,47 @@ const avatarShapes = ref(['circle', 'square'])
       <Separator />
 
       <section class="row-span-1 p-4">
-         <div>
-            <button class="bg-button-secondary hover:bg-button-secondary/70    text-white font-bold py-2 px-4 rounded">
-               Button
-            </button>
+         <div class="flex flex-col items-center justify-center">
+            <Card>
+               <CardHeader>
+                  <CardTitle>
+                     Card Title
+                  </CardTitle>
+               </CardHeader>
+               <CardContent>
+                  <CardDescription>
+                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed
+                     cursus ante dapibus diam. Sed nisi.
+                  </CardDescription>
+               </CardContent>
+               <CardFooter>
+                  <Button>Read More</Button>
+               </CardFooter>
+            </Card>
          </div>
       </section>
 
       <Separator />
+
+      <section class="row-span-1 p-4">
+         <div class="flex flex-col items-center justify-center">
+            <TooltipProvider>
+               <Tooltip>
+                  <TooltipTrigger asChild>
+                     <Button size="icon" variant="icon" @click="themeStore.toggleTheme">
+                        <Icon icon="radix-icons:sun" 
+                        class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 text-secondary-foreground transition-all dark:-rotate-90 dark:scale-0" />
+                        <Icon icon="radix-icons:moon"
+                        class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 dark:text-primary" />
+                     </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                     <span>Toggle Theme</span>
+                  </TooltipContent>
+               </Tooltip>
+            </TooltipProvider>
+         </div>
+      </section>
    </div>
 
 </template>

@@ -1,27 +1,30 @@
 <script setup lang="ts">
 import type { VariantProps } from 'class-variance-authority'
-import { Primitive, type PrimitiveProps } from 'radix-vue'
-import { buttonVariants } from '.'
+import { Primitive, type PrimitiveProps, useForwardPropsEmits } from 'radix-vue'
+import { keyboardButtonVariants, type KeyboardButtonVariantProps } from '.'
 import { cn } from '../../../lib/utils'
 
-interface ButtonVariantProps extends VariantProps<typeof buttonVariants> {}
-
 interface Props extends PrimitiveProps {
-  color?: ButtonVariantProps['color']
-  size?: ButtonVariantProps['size']
-  as?: 'a'
+  color?: KeyboardButtonVariantProps['color']
+  size?: KeyboardButtonVariantProps['size']
+  as?: string
   href?: string
 }
+
+const emits = defineEmits(['click']);
 
 const props = withDefaults(defineProps<Props>(), {
   as: 'a',
 })
+
+const forwarded = useForwardPropsEmits(props, emits);
+
 </script>
 
 <template>
   <Primitive
-    v-bind="props"
-    :class="cn(buttonVariants({ color, size }))"
+    v-bind="forwarded"
+    :class="cn(keyboardButtonVariants({ color, size }))"
   >
     <slot />
   </Primitive>

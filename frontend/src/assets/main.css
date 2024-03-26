@@ -37,6 +37,7 @@
 
     --button-primary: 212 77.8% 42.4%;
     --button-secondary: 178 40.2% 47.3%;
+    --button-icon: 0 0% 100%;
   }
  
   .dark {
@@ -71,6 +72,7 @@
 
     --button-primary: 60 9.1% 97.8%;
     --button-secondary: 12 6.5% 15.1%;
+    --button-icon:  20 14.3% 4.1%;
   }
 }
  

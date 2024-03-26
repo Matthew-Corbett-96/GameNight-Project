@@ -1,8 +1,9 @@
 import { cva } from 'class-variance-authority'
+import { type VariantProps } from 'class-variance-authority'
 
 export { default as KeyboardButton } from './KeyboardButton.vue'
 
-export const buttonVariants = cva(
+export const keyboardButtonVariants = cva(
   "inline-block text-white font-bold border-b-4 inline-flex items-center justify-center ring-offset-background transition-colors ",
   {
     variants: {
@@ -34,3 +35,5 @@ export const buttonVariants = cva(
     },
   },
 )
+
+export interface KeyboardButtonVariantProps extends VariantProps<typeof keyboardButtonVariants> {}
