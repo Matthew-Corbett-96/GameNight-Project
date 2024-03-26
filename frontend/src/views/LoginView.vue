@@ -9,14 +9,14 @@ const authStore = useAuthStore();
     <h1 class="login-title">
       WELCOME TO GAME NIGHT
     </h1>
-    <Button v-if="!authStore.isLoggedIn" @clicked="authStore.Login" >
+    <Button v-if="!authStore.isLoggedIn" @click="authStore.Login" >
       Login
     </Button>
     <p class="reg-message">Not a User Yet?</p>
-    <Button v-if="!authStore.isLoggedIn"  @clicked="authStore.Register" > 
+    <Button v-if="!authStore.isLoggedIn"  @click="authStore.Register" > 
       Register
     </Button>
-    <Button v-if="authStore.isLoggedIn"  @clicked="authStore.Logout" >
+    <Button v-if="authStore.isLoggedIn"  @click="authStore.Logout" >
       Logout
     </Button>
   </div>
