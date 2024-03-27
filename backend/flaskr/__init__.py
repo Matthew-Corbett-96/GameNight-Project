@@ -23,7 +23,7 @@ def create_app():
         "beat_schedule": { # note that all times are in UTC && 0 is Sunday
             "heartbeat": {
                 "task": "flaskr.tasks.heartbeat",
-                "schedule": crontab(hour="*/5"), 
+                "schedule": crontab(minute="*/5"), 
             },
             "send_day_before_message": {
                 "task": "flaskr.tasks.send_day_before_message",
