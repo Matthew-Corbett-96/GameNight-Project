@@ -9,28 +9,24 @@ from .service.messageService import MessageService
 logger = getLogger(__name__)
 
 @shared_task(bind=True)
-def simple_test(self) -> None:
-    logger.info("Simple Test")
-    # users: User = User.query.all()
-    # for user in users:
-    #     print(user.to_dict())
+def heartbeat(self) -> None:
+    logger.info("heartbeat!...")
 
 @shared_task(bind=True)
 def send_day_before_message(self) -> None:
     logger.info("Sending Day Before Message")
-    get_task_logger(__name__).info("Sending Day Before Message")
     message_service = MessageService()
     message_service.sendDayBeforeAlert([ user for user in User.query.all() if is_valid_phone_number(user)])
 
 @shared_task(bind=True)
 def send_day_of_message(self) -> None:
-    get_task_logger(__name__).info("Sending Day of Message")
+    logger.info("Sending Day of Message")
     message_service = MessageService()
     message_service.sendGameDayAlert([ user for user in User.query.all() if is_valid_phone_number(user)])
 
 @shared_task(bind=True)
 def send_hour_on_hour_message(self) -> None:
-    get_task_logger(__name__).info("Sending Hour on Hour Message")
+    logger.info("Sending Hour on Hour Message")
     userList: list[User] = User.query.all()
     filteredList = [user for user in userList if is_valid_phone_number(user)]
     message_service = MessageService()
