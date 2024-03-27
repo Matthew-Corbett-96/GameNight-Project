@@ -21,6 +21,7 @@ from twilio.rest.api.v2010.account.message import MessageInstance
 from twilio.base.exceptions import TwilioRestException
 import os
 from flaskr.models.models import User
+from flaskr.tasks import heartbeat
 
 
 def setup_routes(app: Flask, api: Api) -> None:
@@ -37,6 +38,7 @@ def setup_routes(app: Flask, api: Api) -> None:
     # Healthcheck
     @app.route("/healthcheck", methods=["GET"])
     def heathcheck() -> Response:
+        heartbeat.delay() # this is here bc without it for some reason the celery task doesn't get called without one being here why??????? 
         return send_json_response(Response200("Healthy"))
 
     # 404
