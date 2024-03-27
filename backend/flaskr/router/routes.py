@@ -20,7 +20,6 @@ from twilio.rest import Client
 from twilio.rest.api.v2010.account.message import MessageInstance
 from twilio.base.exceptions import TwilioRestException
 import os
-from flaskr.tasks import simple_test
 from flaskr.models.models import User
 
 
@@ -72,9 +71,3 @@ def setup_routes(app: Flask, api: Api) -> None:
         except Exception as e:
             raise e
 
-    @app.route("/test2", methods=["GET"])
-    def test2() -> Response:
-        logger = getLogger(__name__)
-        logger.info("Test2")
-        simple_test.delay()
-        return send_json_response(Response200(message="Task Sent", data=None))
