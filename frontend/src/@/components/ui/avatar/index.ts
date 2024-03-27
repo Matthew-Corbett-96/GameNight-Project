@@ -3,6 +3,7 @@ import { cva } from 'class-variance-authority'
 export { default as Avatar } from './Avatar.vue'
 export { default as AvatarImage } from './AvatarImage.vue'
 export { default as AvatarFallback } from './AvatarFallback.vue'
+import type { VariantProps } from 'class-variance-authority';
 
 export const avatarVariant = cva(
   'inline-flex items-center justify-center font-normal text-foreground select-none shrink-0 bg-secondary overflow-hidden',
@@ -24,3 +25,5 @@ export const avatarVariant = cva(
     },
   }
 )
+
+export interface AvatarVariantProps extends VariantProps<typeof avatarVariant> {}

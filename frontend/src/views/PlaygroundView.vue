@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Avatar, AvatarImage, AvatarFallback } from '../@/components/ui/avatar'
-import { AlertDialogRoot, AlertDialogTrigger, AlertDialogPortal, AlertDialogOverlay, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from 'radix-vue';
-import { Button, type ButtonVariantProps} from '../@/components/ui/button'
-import { Checkbox } from '../@/components/ui/checkbox'
+import {
+   AlertDialogRoot, AlertDialogTrigger,
+   AlertDialogPortal, AlertDialogOverlay,
+   AlertDialogContent, AlertDialogTitle,
+   AlertDialogDescription, AlertDialogCancel,
+   AlertDialogAction
+} from 'radix-vue';
+import { Button, type ButtonVariantProps } from '../@/components/ui/button'
 import { Separator } from '../@/components/ui/separator';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../@/components/ui/card';
 import { KeyboardButton, type KeyboardButtonVariantProps } from '../@/components/ui/keyboardButton'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger  } from '../@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../@/components/ui/tooltip';
+import { Input, type InputVariantProps } from '../@/components/ui/input';
 import { Icon } from '@iconify/vue';
 import { useColorThemeStore } from '../store/theme';
 
@@ -21,6 +27,10 @@ const btnSizes = ref(['icon', 'sm', 'md', 'lg',])
 const avatarSizes = ref(['sm', 'md', 'lg', 'xl'])
 const avatarShapes = ref(['circle', 'square'])
 const themeStore = useColorThemeStore();
+// input variants
+const modVal = ref('default...');
+const inputSizes = ref(['sm', 'md', 'lg']);
+const inputVariants = ref(['default', 'secondary','destructive', 'ghost']);
 </script>
 
 <template>
@@ -83,8 +93,7 @@ const themeStore = useColorThemeStore();
 
          <div class="grid grid-cols-3 gap-4">
             <div v-for="color in colors" :key="color" class="flex flex-col items-center justify-center p-4">
-               <KeyboardButton v-for="size in sizes" :key="size"
-                  :color="color as KeyboardButtonVariantProps['color']"
+               <KeyboardButton v-for="size in sizes" :key="size" :color="color as KeyboardButtonVariantProps['color']"
                   :size="size as KeyboardButtonVariantProps['size']">
                   Button
                </KeyboardButton>
@@ -100,8 +109,7 @@ const themeStore = useColorThemeStore();
          </div>
          <div class="grid grid-cols-3 gap-4">
             <div v-for="variant in btnVariants" :key="variant" class="flex flex-col items-center justify-center p-4">
-               <Button v-for="size in btnSizes" 
-                  :size="size as ButtonVariantProps['size']"
+               <Button v-for="size in btnSizes" :size="size as ButtonVariantProps['size']"
                   :variant="variant as ButtonVariantProps['variant']">
                   Button
                </Button>
@@ -140,10 +148,10 @@ const themeStore = useColorThemeStore();
                <Tooltip>
                   <TooltipTrigger asChild>
                      <Button size="icon" variant="icon" @click="themeStore.toggleTheme">
-                        <Icon icon="radix-icons:sun" 
-                        class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 text-secondary-foreground transition-all dark:-rotate-90 dark:scale-0" />
+                        <Icon icon="radix-icons:sun"
+                           class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 text-secondary-foreground transition-all dark:-rotate-90 dark:scale-0" />
                         <Icon icon="radix-icons:moon"
-                        class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 dark:text-primary" />
+                           class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 dark:text-primary" />
                      </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -151,6 +159,22 @@ const themeStore = useColorThemeStore();
                   </TooltipContent>
                </Tooltip>
             </TooltipProvider>
+         </div>
+      </section>
+
+      <Separator />
+
+      <section class="row-span-1 p-4">
+         <div class="flex flex-col items-center justify-center py-4">
+            <h2 class="text-center font-bold text-xl">Inputs</h2>
+         </div>
+         <div v-for="variant in inputVariants" class="grid grid-cols-3 gap-8">
+            <Input 
+            v-for="size in inputSizes" 
+            :variant="variant as InputVariantProps['variant']"
+            :size="size as InputVariantProps['size']"
+            class="m-4">
+            </Input>
          </div>
       </section>
    </div>
