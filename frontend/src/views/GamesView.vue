@@ -3,6 +3,15 @@ import { ref, watch, onMounted, type Ref } from 'vue';
 import { type Game, type GameFormData } from '../main';
 import { useGameStore } from '../store/games';
 import {Button} from '../@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../@/components/ui/dialog'
 
 const dialog = ref(false);
 const gameStore = useGameStore();
@@ -62,83 +71,42 @@ function updateGame(formData: GameFormData) {
 <template>
   <h1 class="text-h2 text-center mb-36"> Games </h1>
 
-  <v-row justify="center">
-    <v-dialog v-model="dialog" persistent width="1024" transition="dialog-bottom-transition">
+  <Dialog>
+    <DialogTrigger as-child>
+      <Button variant="outline">
+        Add a Game
+      </Button>
+    </DialogTrigger>
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>Edit profile</DialogTitle>
+        <DialogDescription>
+          Make changes to your profile here. Click save when you're done.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="name" class="text-right">
+            Name
+          </Label>
+          <Input id="name" value="Pedro Duarte" class="col-span-3" />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="username" class="text-right">
+            Username
+          </Label>
+          <Input id="username" value="@peduarte" class="col-span-3" />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button type="submit">
+          Save changes
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 
-      <template v-slot:activator="{ props }">
-        <Button v-bind="props">Create Game</Button>
-      </template>
-
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Create Game</span>
-        </v-card-title>
-
-        <v-card-text>
-          <v-container>
-
-            <!-- Row 1 -->
-            <v-row>
-              <!-- <form @submit.prevent="createGame"> -->
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field 
-                v-model="gameformdata.name" 
-                label="Name"
-                hint="example of helper text only on focus"
-                />
-              </v-col>
-
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field 
-                v-model="gameformdata.description" 
-                label="Discription" 
-                hint="Be creative" 
-                persistent-hint
-                required
-                />
-              </v-col>
-            </v-row>
-
-            <!-- Row 2 -->
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-select 
-                v-model="gameformdata.min_players" 
-                :items="[1, 2, 3, 4, 5]" 
-                label="min_players"
-                required
-                />
-              </v-col>
-
-              <v-col cols="12" sm="6" md="4">
-                <v-select 
-                v-model="gameformdata.max_players" 
-                :items="[1, 2, 3, 4, 5]" 
-                label="max_players"
-                required
-                />
-              </v-col>
-            </v-row>
-            <!-- </form> -->
-
-          </v-container>
-
-          <small>*indicates required field</small>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <Button color="blue-darken-1" variant="default" @click="dialog = false">
-            Close
-          </Button>
-          <Button color="blue-darken-1" variant="default" @click="createGame">
-            Submit
-          </Button>
-        </v-card-actions>
-
-      </v-card>
-    </v-dialog>
-  </v-row>
+ 
 </template>
 
 <style scoped>
