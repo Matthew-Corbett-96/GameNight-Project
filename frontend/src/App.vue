@@ -19,12 +19,17 @@ const themeStore = useColorThemeStore();
 </script>
 
 <template>
+  <div >
   <v-app>
+    
     <v-app-bar scroll-behavior="elevate">
-      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      
+        
+      
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 bg-slate-800">
         <a href="/dashboard" class="flex items-center space-x-3 rtl:space-x-reverse">
           <!-- <img src="src\assets\logoo.jpg" class="h-8" alt="Flowbite Logo" /> -->
-          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">GameNight</span>
+          <span class="self-center text-2xl tt whitespace-nowrap dark:text-white">GameNight</span>
         </a>
       </div>
       <v-spacer></v-spacer>
@@ -37,20 +42,20 @@ const themeStore = useColorThemeStore();
           <a class="inline-block bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 border-b-4 border-gray-700 hover:border-gray-500 rounded"
             href="/games">Games</a>
         </li>
-        <li class="mr-4">
-          <a class="inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+        <li>
+          <a class="mr-4 inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
             v-if="authStore.isLoggedIn" href="/profile">Profile</a>
         </li>
-        <li class="mr-4">
-          <a class="inline-block bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-2 px-4 border-b-4 border-yellow-700 hover:border-yellow-500 rounded"
+        <li>
+          <a class="mr-4 inline-block bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-2 px-4 border-b-4 border-yellow-700 hover:border-yellow-500 rounded"
             href="/about">About</a>
         </li>
-        <li class="mr-4">
-          <a class="inline-block bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded"
+        <li>
+          <a class="mr-4 inline-block bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded"
             v-if="authStore.isLoggedIn" @click="authStore.Logout">Logout</a>
         </li>
-        <li class="mr-4">
-          <a class="inline-block bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 px-4 border-b-4 border-pink-800 hover:border-pink-600 rounded"
+        <li>
+          <a class="mr-4 inline-block bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 px-4 border-b-4 border-pink-800 hover:border-pink-600 rounded"
             v-if="!authStore.isLoggedIn" @click="authStore.Login">Login</a>
         </li>
         <li class="mr-4">
@@ -74,6 +79,7 @@ const themeStore = useColorThemeStore();
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+      
     </v-app-bar>
 
     <v-main>
@@ -91,6 +97,18 @@ const themeStore = useColorThemeStore();
       </v-row>
     </v-footer>
 
-  </v-app></template>
+  </v-app>
+  </div>
+  </template>
 
-<style scoped></style>
+<style scoped>
+.tt {
+  /* color: #fff; */
+  font-family: 'Lato', sans-serif;
+  text-align: center;
+  /* font-size: 0.8rem; */
+  line-height: 150%;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+</style>
