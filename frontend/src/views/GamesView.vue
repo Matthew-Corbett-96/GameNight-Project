@@ -3,7 +3,6 @@ import { ref, watch, onMounted, type Ref } from 'vue';
 import { type Game, type GameFormData } from '../main';
 import { useGameStore } from '../store/games';
 import zod from 'zod';
-import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
 import { Button } from '../@/components/ui/button';
 import { Input } from '../@/components/ui/input';
@@ -36,6 +35,7 @@ import {
   FormItem,
   Form
 } from '../@/components/ui/form';
+import { GameCard } from '../@/components/gamenight/gameCard';
 
 const dialog = ref(false);
 const gameStore = useGameStore();
@@ -63,22 +63,13 @@ const schema = toTypedSchema(zod.object({
 
 // form variable for game creation and update
 const form = useForm({
-  validationSchema: schema,
-  initialValues: {
-    name: '',
-    description: '',
-    min_players: 0,
-    max_players: 0,
-  },
+  validationSchema: schema
 });
 
 // function to submit form
 const onSubmit = form.handleSubmit((values) => {
   console.log('Form submitted!', values);
 });
-
-
-
 
 // Form data for the create and update game forms
 const gameformdata: Ref<GameFormData> = ref({
@@ -122,12 +113,7 @@ function updateGame(formData: GameFormData) {
 
 //clear form data
 function clearForm() {
-  gameformdata.value = {
-    name: '',
-    description: '',
-    min_players: 0,
-    max_players: 0,
-  };
+  form.resetForm();
 }
 
 </script>
@@ -209,111 +195,22 @@ function clearForm() {
     <!-- End create Game -->
 
     <!-- Show all games here -->
-    <div class="display-games-container">
+    <div class="grid grid-cols-4 gap-4">
       <div v-for="game in games" :key="game.id">
         <div class="flex flex-col items-center">
-          <card class=" bg-blue-200 bg-opacity-10 p-4 rounded-lg shadow-md mb-5 mt-5">
-            <CardHeader>
-              <card-title>{{ game.name }}</card-title>
-              <CardDescription>{{ game.description }}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Min Players: {{ game.min_players }}</p>
-              <p>Max Players: {{ game.max_players }}</p>
-            </CardContent>
-            <CardFooter>
-              <div class="flex space-x-2">
-                <Dialog class="items-center mb-5 flex space-x-2">
-                  <div class="flex items-center justify-center">
-                    <DialogTrigger asChild>
-                      <Button class="out">Update</Button>
-                    </DialogTrigger>
-                  </div>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Update Game</DialogTitle>
-                      <DialogDescription>
-                        Make changes to game here. Click save when you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogBody>
-                      <form @submit="onSubmit">
-                        <FormField v-slot="{ componentField }" name="name">
-                          <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                              <Input type="text" v-model="gameformdata.name" required :value="gameformdata.name"
-                                v-bind="componentField" class="mb-5" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        </FormField>
-                        <div class="mb-5">
-                          <FormField v-slot="{ componentField }" name="description">
-                            <FormItem>
-                              <FormLabel>Description</FormLabel>
-                              <FormControl>
-                                <Input type="text" v-model="gameformdata.description" required
-                                  :value="gameformdata.description" v-bind="componentField" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          </FormField>
-                        </div>
-                        <div class="mb-5 flex items-center space-x-2">
-                          <div class="w-50">
-                            <FormField v-slot="{ componentField }" name="min_players">
-                              <FormItem>
-                                <FormLabel>Minimum Players</FormLabel>
-                                <FormControl>
-                                  <Input type="number" v-model="gameformdata.min_players" required
-                                    :value="gameformdata.min_players" v-bind="componentField" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            </FormField>
-                          </div>
-                          <FormField v-slot="{ componentField }" name="max_players">
-                            <FormItem>
-                              <FormLabel>Maximum Players</FormLabel>
-                              <FormControl>
-                                <Input type="number" v-model="gameformdata.max_players" required
-                                  :value="gameformdata.max_players" v-bind="componentField" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          </FormField>
-                        </div>
-                      </form>
-                    </DialogBody>
-                    <DialogClose>
-                      <Button variant="outline" @click="clearForm" class="m-2">Cancel</Button>
-                      <Button @click="updateGame(gameformdata)">Save</Button>
-                    </DialogClose>
-                  </DialogContent>
-                </Dialog>
-                <Button class="fill" @click="deleteGame(game)">Delete</Button>
-              </div>
-            </CardFooter>
-          </card>
+          <GameCard :game="game" @update="console.log('updated', $event)" @delete="console.log('deleted')">
+          </GameCard>
         </div>
       </div>
     </div>
-
     <!-- End show all games here -->
+
   </div>
 </template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap');
-
-.display-games-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 1rem;
-  /* margin: 1rem; */
-}
 
 .v-row {
   justify-content: center;
@@ -323,21 +220,6 @@ h1 {
   font-family: 'Righteous', cursive;
   font-size: 3rem;
   color: #fff;
-}
-
-.out {
-  background: transparent;
-  color: rgba(0, 212, 255, 0.9);
-  border: 1px solid rgba(0, 212, 255, 0.6);
-  transition: all .3s ease;
-
-}
-
-.out:hover {
-  transform: scale(1.125);
-  color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.9);
-  transition: all .3s ease;
 }
 
 .fill {
