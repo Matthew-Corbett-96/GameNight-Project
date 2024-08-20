@@ -2,7 +2,11 @@
 import { ref, watch, onMounted, type Ref } from 'vue';
 import { type Game, type GameFormData } from '../main';
 import { useGameStore } from '../store/games';
-import {Button} from '../@/components/ui/button'
+import zod from 'zod';
+import { toTypedSchema } from '@vee-validate/zod';
+import { Button } from '../@/components/ui/button';
+import { Input } from '../@/components/ui/input';
+import { Label } from '../@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -10,8 +14,28 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '../@/components/ui/dialog'
+  DialogTrigger
+} from '../@/components/ui/dialog';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../@/components/ui/card';
+import { useForm } from 'vee-validate';
+import { DialogClose } from 'radix-vue';
+import {
+  FormField,
+  FormControl,
+  FormDescription,
+  FormMessage,
+  FormLabel,
+  FormItem,
+  Form
+} from '../@/components/ui/form';
+import { GameCard } from '../@/components/gamenight/gameCard';
 
 const dialog = ref(false);
 const gameStore = useGameStore();
@@ -23,18 +47,37 @@ watch(() => gameStore.getGames, (newVal, oldVal) => {
   games.value = newVal;
 });
 
+// Fetch games from the backend when the component is mounted
+onMounted(() => {
+  gameStore.fetchGames();
+});
+
+
+// schema for game form 
+const schema = toTypedSchema(zod.object({
+  name: zod.string().min(2).max(50),
+  description: zod.string().min(2).max(50),
+  min_players: zod.number().min(1).max(5),
+  max_players: zod.number().min(1).max(5),
+}));
+
+// form variable for game creation and update
+const form = useForm({
+  validationSchema: schema
+});
+
+// function to submit form
+const onSubmit = form.handleSubmit((values) => {
+  console.log('Form submitted!', values);
+});
+
 // Form data for the create and update game forms
 const gameformdata: Ref<GameFormData> = ref({
   name: '',
   description: '',
   min_players: 0,
   max_players: 0,
-});
-
-// Fetch games from the backend when the component is mounted
-onMounted(() => {
-  gameStore.fetchGames();
-});
+} as GameFormData);
 
 
 // Function for opening the update game form
@@ -58,67 +101,139 @@ function createGame() {
   dialog.value = false;
   gameStore.createGame(gameformdata.value);
   gameStore.fetchGames();
+  clearForm();
 }
 
 // Function for submitting the update game form
 function updateGame(formData: GameFormData) {
+  dialog.value = false;
   gameStore.updateGame(formData);
   gameStore.fetchGames();
+}
+
+//clear form data
+function clearForm() {
+  form.resetForm();
 }
 
 </script>
 
 <template>
-  <h1 class="text-h2 text-center mb-36"> Games </h1>
+  <div class="bg-slate-800 min-h-screen">
+    <h1 class="text-h2 text-center mb-15"> Games </h1>
 
-  <Dialog>
-    <DialogTrigger as-child>
-      <Button variant="outline">
-        Add a Game
-      </Button>
-    </DialogTrigger>
-    <DialogContent class="sm:max-w-[425px]">
-      <DialogHeader>
-        <DialogTitle>Edit profile</DialogTitle>
-        <DialogDescription>
-          Make changes to your profile here. Click save when you're done.
-        </DialogDescription>
-      </DialogHeader>
-      <div class="grid gap-4 py-4">
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="name" class="text-right">
-            Name
-          </Label>
-          <Input id="name" value="Pedro Duarte" class="col-span-3" />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="username" class="text-right">
-            Username
-          </Label>
-          <Input id="username" value="@peduarte" class="col-span-3" />
+    <!-- create Game -->
+    <Dialog class="items-center flex space-x-2">
+      <div class="flex items-center justify-center">
+        <DialogTrigger asChild>
+          <Button variant="default" class="hover:bg-blue-500 hover:text-white">Create Game</Button>
+        </DialogTrigger>
+      </div>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Game</DialogTitle>
+          <DialogDescription>
+            Make changes to game here. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogBody>
+          <form @submit="onSubmit">
+            <FormField v-slot="{ componentField }" name="name">
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input type="text" v-model="gameformdata.name" required :value="gameformdata.name"
+                    v-bind="componentField" class="mb-5" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <div class="mb-5">
+              <FormField v-slot="{ componentField }" name="description">
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input type="text" v-model="gameformdata.description" required :value="gameformdata.description"
+                      v-bind="componentField" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </div>
+            <div class="mb-5 flex items-center space-x-2">
+              <div class="w-50">
+                <FormField v-slot="{ componentField }" name="min_players">
+                  <FormItem>
+                    <FormLabel>Minimum Players</FormLabel>
+                    <FormControl>
+                      <Input type="number" v-model="gameformdata.min_players" required :value="gameformdata.min_players"
+                        v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+              </div>
+              <FormField v-slot="{ componentField }" name="max_players">
+                <FormItem>
+                  <FormLabel>Maximum Players</FormLabel>
+                  <FormControl>
+                    <Input type="number" v-model="gameformdata.max_players" required :value="gameformdata.max_players"
+                      v-bind="componentField" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </div>
+          </form>
+        </DialogBody>
+        <DialogClose>
+          <Button variant="outline" @click="clearForm" class="m-2">Cancel</Button>
+          <Button @click="createGame">Create</Button>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+    <!-- End create Game -->
+
+    <!-- Show all games here -->
+    <div class="grid grid-cols-4 gap-4">
+      <div v-for="game in games" :key="game.id">
+        <div class="flex flex-col items-center">
+          <GameCard :game="game" @update="console.log('updated', $event)" @delete="console.log('deleted')">
+          </GameCard>
         </div>
       </div>
-      <DialogFooter>
-        <Button type="submit">
-          Save changes
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+    </div>
+    <!-- End show all games here -->
 
- 
+  </div>
 </template>
 
 <style scoped>
-.display-games-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 1rem;
-  margin: 1rem;
-  background-color: rgb(180, 181, 181);
-}
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap');
 
 .v-row {
   justify-content: center;
+}
+
+h1 {
+  font-family: 'Righteous', cursive;
+  font-size: 3rem;
+  color: #fff;
+}
+
+.fill {
+  background: rgba(0, 212, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0);
+  font-weight: bold;
+  transition: all .3s ease;
+}
+
+.fill:hover {
+  transform: scale(1.125);
+  border-color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 10px 5px rgba(0, 0, 0, 0.125));
+  transition: all .3s ease;
 }
 </style>

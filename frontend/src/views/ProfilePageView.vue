@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
-import { computed, onMounted } from 'vue';
-import type { ComputedRef } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 import { Gender, type AuthProfile, type AppUser } from '../main';
 import { useAuthStore } from '../store/auth';
 import * as z from 'zod';
@@ -11,11 +11,12 @@ import { Button } from '../@/components/ui/button';
 import { Input } from '../@/components/ui/input';
 import { Label } from '../@/components/ui/label';
 import { Checkbox } from '../@/components/ui/checkbox';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger } from '../@/components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from '../@/components/ui/tabs';
 import {
   Card,
   CardContent,
@@ -25,22 +26,32 @@ import {
   CardTitle,
 } from '../@/components/ui/card';
 import { useForm } from 'vee-validate';
-import { 
-  FormField, 
-  FormControl, 
-  FormDescription, 
-  FormMessage, 
-  FormLabel, 
-  FormItem } from '../@/components/ui/form';
+import {
+  FormField,
+  FormControl,
+  FormDescription,
+  FormMessage,
+  FormLabel,
+  FormItem,
+  Form
+} from '../@/components/ui/form';
 
 const authStore = useAuthStore();
-const current_user: ComputedRef<AppUser> = computed(() => authStore.getCurrentUser);
+const current_user: Ref<AppUser> = ref(authStore.getCurrentUser);
+
+watch(() => authStore.getCurrentUser, (newVal, oldVal) => {
+  current_user.value = newVal;
+});
+
+onMounted(() => {
+  authStore.updateCurrentUser();
+});
 // const auth_profile: ComputedRef<AuthProfile> = computed(() => authStore.getAuthProfile);
 
 const schema = toTypedSchema(z.object({
-  email: z.string().email().default("test@aol.com"),
+  email: z.string().email(),
   phone: z.string().min(10).max(15),
-  username: z.string().min(2).max(50).default(current_user.value.username),
+  username: z.string().min(2).max(50),
   first_name: z.string().min(2).max(50),
   last_name: z.string().min(2).max(50),
   created_on: z.date().optional(),
@@ -49,17 +60,28 @@ const schema = toTypedSchema(z.object({
   role_name: z.string().min(2).max(50),
 }));
 
+
 const form = useForm({
   validationSchema: schema,
+  initialValues: {
+    email: current_user.value.email,
+    phone: current_user.value.phone_number,
+    username: current_user.value.username,
+    first_name: current_user.value.first_name,
+    last_name: current_user.value.last_name,
+    is_active: current_user.value.is_active,
+    role_name: current_user.value.role_name,
+  }
 })
+
+
 
 const onSubmit = form.handleSubmit((values) => {
   console.log('Form submitted!', values);
 })
 
-onMounted(() => {
-  authStore.updateCurrentUser();
-});
+
+
 
 </script>
 
@@ -67,7 +89,7 @@ onMounted(() => {
   <div>
     <Card>
       <CardHeader>
-        <CardTitle>Welcome {{current_user.username}}!</CardTitle>
+        <CardTitle>Welcome {{ current_user.first_name }}!</CardTitle>
       </CardHeader>
       <CardContent class="shadow-2xl">
         <Tabs default-value="account">
@@ -93,7 +115,8 @@ onMounted(() => {
                       <FormItem>
                         <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input type="text" placeholder="username here ..." v-bind="componentField" />
+                          <Input type="text" v-model="current_user.username" :value="current_user.username"
+                            v-bind="componentField" />
                         </FormControl>
                         <FormDescription>
                           This is your public display name.
@@ -107,7 +130,8 @@ onMounted(() => {
                           <FormItem>
                             <FormLabel>First Name</FormLabel>
                             <FormControl>
-                              <Input type="text" placeholder="Ronald" v-bind="componentField" />
+                              <Input type="text" v-model="current_user.first_name" :value="current_user.first_name"
+                                v-bind="componentField" />
                             </FormControl>
                             <FormDescription>
                             </FormDescription>
@@ -120,7 +144,8 @@ onMounted(() => {
                           <FormItem>
                             <FormLabel>Last Name</FormLabel>
                             <FormControl>
-                              <Input type="text" placeholder="Ronald" v-bind="componentField" />
+                              <Input type="text" v-model="current_user.last_name" :value="current_user.last_name"
+                                v-bind="componentField" />
                             </FormControl>
                             <FormDescription>
                             </FormDescription>
@@ -135,7 +160,8 @@ onMounted(() => {
                           <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input type="text" placeholder="test@test.com" v-bind="componentField" />
+                              <Input type="text" v-model="current_user.email" :value="current_user.email"
+                                v-bind="componentField" />
                             </FormControl>
                             <FormDescription>
                             </FormDescription>
@@ -148,7 +174,8 @@ onMounted(() => {
                           <FormItem>
                             <FormLabel>Phone Number</FormLabel>
                             <FormControl>
-                              <Input type="tel" placeholder="1234561234" v-bind="componentField" />
+                              <Input type="tel" v-model="current_user.phone_number" :value="current_user.phone_number"
+                                v-bind="componentField" />
                             </FormControl>
                             <FormDescription>
                               Do not include +1 before the number.
@@ -158,19 +185,20 @@ onMounted(() => {
                         </FormField>
                       </div>
                     </div>
-                    <div  class="mb-5 flex items-center space-x-2">
+                    <div class="mb-5 flex items-center space-x-2">
                       <div class="w-50">
                         <FormField v-slot="{ componentField }" name="role_name">
-                        <FormItem>
-                          <FormLabel>Role</FormLabel>
-                          <FormControl>
-                            <Input type="text" placeholder="admin" v-bind="componentField" />
-                          </FormControl>
-                          <FormDescription>
-                            This is your role name.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
+                          <FormItem>
+                            <FormLabel>Role</FormLabel>
+                            <FormControl>
+                              <Input type="text" v-model="current_user.role_name" :value="current_user.role_name"
+                                v-bind="componentField" />
+                            </FormControl>
+                            <FormDescription>
+                              This is your role name.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
                         </FormField>
                       </div>
                       <div class="w-50">
@@ -225,5 +253,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
