@@ -31,6 +31,4 @@ def send_hour_on_hour_message(self) -> None:
     message_service.sendHourOnHourMessage(filteredList)
 
 def is_valid_phone_number(user: User) -> bool:
-    return user.phone_number is not None \
-          and len(user.phone_number) > 0 \
-          and user.phone_number == "5082438026"
+    return user.phone_number is not None
